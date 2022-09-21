@@ -1,0 +1,74 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.background {
+  background-color: rgb(52, 50, 50);
+  width: 100%;
+  height: 600px;
+  border: 5px solid rgb(127, 6, 6);
+  padding: 5px;
+
+}
+
+.Checkbox-Background {
+  background-color:blue;
+  width: 75%;
+  height: 350px;
+  margin: auto;
+}
+
+button {
+  margin: auto;
+  width: 143px;
+  height: 32px;
+
+  background: #FFCC00;
+  border-radius: 4px;
+}
+
+
+.multiselect {
+  width: 200px;
+}
+
+.selectBox {
+  position: left;
+}
+
+.selectBox select {
+  width: 100%;
+  font-weight: bold;
+}
+
+.overSelect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#checkboxes {
+  display: none;
+  border: 1px #dadada solid;
+}
+
+#checkboxes label {
+  display: block;
+}
+
+#checkboxes label:hover {
+  background-color: #1e90ff;
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
