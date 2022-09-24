@@ -1,9 +1,22 @@
 import logo from './logo.svg';
 import './App.css';
 import React, { Component } from "react";
+import * as ReactDOM from "react-dom";
+import { MultiSelect } from "@progress/kendo-react-dropdowns";
 
 var 
 expanded = false;
+
+const sports = [
+  "Baseball",
+  "Basketball",
+  "Cricket",
+  "Field Hockey",
+  "Football",
+  "Table Tennis",
+  "Tennis",
+  "Volleyball",
+];
 
 // function App() {
 class App extends Component {
@@ -19,6 +32,15 @@ class App extends Component {
       expanded = false;
     }
   }
+  state = {
+    value: [],
+  };
+
+  onChange = (event) => {
+    this.setState({
+      value: [...event.target.value],
+    });
+  };
 
   // return (
     render() {
@@ -32,24 +54,32 @@ class App extends Component {
             <p>Filter Options</p>
             <div className="Checkbox-Background">
               {/* https://stackoverflow.com/questions/17714705/how-to-use-checkbox-inside-select-option */}
-              <form padding="100px">
+              {/* <form padding="100px">
                 <div class="multiselect">
-                  <div class="selectBox" onclick={this.showCheckboxes}>
+                  <div class="selectBox" onClick={this.showCheckboxes}>
                     <select>
                       <option>Select an option</option>
                     </select>
                     <div class="overSelect"></div>
                   </div>
                   <div id="checkboxes">
-                    <label for="one">
+                    <label htmlFor="one">
                       <input type="checkbox" id="woman" />woman</label>
-                    <label for="two">
+                    <label htmlFor="two">
                       <input type="checkbox" id="nonbinary" />non binary</label>
-                    <label for="three">
+                    <label htmlFor="three">
                       <input type="checkbox" id="man" />men...</label>
                   </div>
                 </div>
-              </form>
+              </form> */}
+              <div>
+                <div>Favorite sports:</div>
+                <MultiSelect
+                  data={sports}
+                  onChange={this.onChange}
+                  value={this.state.value}
+                />
+              </div>
             
             
             <label for="major">Choose a major:</label>
