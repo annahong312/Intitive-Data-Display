@@ -1,6 +1,7 @@
 import './App.css';
 import React, { Component } from "react";
-import MultipleSelectChip from './Components/MultipleSelectChip.js';
+import MultipleSelectGender from './Components/MultipleSelectGender.js';
+import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
 
 class App extends Component {
 
@@ -15,17 +16,18 @@ class App extends Component {
 
           <p>Filter Options</p>
           <div className="Checkbox-Background">
-            <MultipleSelectChip/>
+            <MultipleSelectGender/>
+            <MultipleSelectMajor/>
           </div>
           <button type="button">Generate Data</button>
         </div>
 
 
         <div className="background">
-          <h1>HELLO</h1>
+          <h1>Chart</h1>
         </div>
         <div className="background">
-          <h1>HELLO 2</h1>
+          <h1>Graph</h1>
         </div>
       </div>
     );

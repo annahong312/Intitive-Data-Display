@@ -8,10 +8,10 @@ body {
 }
 
 .background {
-  background-color: rgb(46, 66, 71);
+  background-color: rgb(195, 194, 199);
   width: 100%;
   height: 600px;
-  border: 5px solid rgb(127, 6, 6);
+  border: 5px solid rgb(141, 29, 29);
   padding: 5px;
 
 }

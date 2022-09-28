@@ -20,16 +20,13 @@ const MenuProps = {
 };
 
 const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
+  'CSCI',
+  'BME',
+  'CSBA',
+  'ME',
+  'CECS',
+  'CE',
+  'EE',
 ];
 
 function getStyles(name, personName, theme) {
@@ -41,7 +38,7 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultipleSelectChip() {
+export default function MultipleSelectGender() {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
 
@@ -58,14 +55,14 @@ export default function MultipleSelectChip() {
   return (
     <div>
       <FormControl sx={{ m: 1, width: 300 }}>
-        <InputLabel id="demo-multiple-chip-label">Chip</InputLabel>
+        <InputLabel id="demo-multiple-chip-label">Major</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
           value={personName}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+          input={<OutlinedInput id="select-multiple-chip" label="Major" />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => (
