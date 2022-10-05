@@ -23,13 +23,21 @@ body {
   margin: auto;
 }
 
-button {
-  margin: auto;
+.mainButton {
+  margin: 5px;
   width: 143px;
   height: 32px;
 
-  background: #FFCC00;
+  background: #faeebe;
   border-radius: 4px;
+}
+
+.selectButton {
+  background: #eae2c2;
+  width: 80px;
+  height: 20px;
+  border-radius: 4px;
+  margin: 2px;
 }
 
 

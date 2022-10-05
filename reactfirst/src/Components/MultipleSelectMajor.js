@@ -6,6 +6,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 
 const ITEM_HEIGHT = 48;
@@ -52,9 +53,66 @@ export default function MultipleSelectGender() {
     );
   };
 
+    //create a clear all function for the dropdown
+    const clearAll = () => {
+      setPersonName([]);
+    }
+  
+    //create a select all function for the dropdown
+    const selectAll = () => {
+      setPersonName(names);
+    }
+
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 300 }}>
+      <Grid container
+        spacing={0}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Grid item > 
+            <FormControl sx={{ m: 1, width: 300 }}>
+            <InputLabel id="demo-multiple-chip-label">Major</InputLabel>
+            <Select
+              labelId="demo-multiple-chip-label"
+              id="demo-multiple-chip"
+              multiple
+              value={personName}
+              onChange={handleChange}
+              input={<OutlinedInput id="select-multiple-chip" label="Major" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </Box>
+              )}
+              MenuProps={MenuProps}
+            >
+              {names.map((name) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  style={getStyles(name, personName, theme)}
+                >
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item>
+          <Grid container>
+            <Grid item xs={8}><button className="selectButton" onClick={selectAll}>Select All</button> </Grid>
+            <Grid item xs={8}><button className="selectButton" onClick={clearAll}>Clear All</button> </Grid>
+          </Grid>
+        </Grid>
+        
+
+
+      </Grid>
+      {/* <FormControl sx={{ m: 1, width: 300 }}>
         <InputLabel id="demo-multiple-chip-label">Major</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
@@ -82,7 +140,7 @@ export default function MultipleSelectGender() {
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+      </FormControl> */}
     </div>
   );
 }
