@@ -3,6 +3,9 @@ import React, { Component } from "react";
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
 import GenerateChart from './Components/GenerateChart.js';
+import AddGraphButton from './Components/AddGraphButton';
+
+import {useState} from "react"
 
 class App extends Component {
 
@@ -21,7 +24,7 @@ render() {
           <MultipleSelectGender />
           <MultipleSelectMajor />
         </div>
-        <button className="mainButton" type="button">Generate Data</button>
+        <AddGraphButton />
       </div>
 
 

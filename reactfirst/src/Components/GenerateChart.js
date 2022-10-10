@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import { Chart as Chart } from 'chart.js/auto'
 import { UserData } from '../Data'
 
@@ -26,7 +26,12 @@ export default function GenerateChart() {
   });
 
   return (
-    <Bar data={userData}/>
+    <Line 
+      data={userData}
+      height={"80px"}
+      // width={"30%"}
+      // options={{ maintainAspectRatio: false }}
+    />
   );
 
 }
