@@ -3,6 +3,10 @@ import React, { Component } from "react";
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
 import GenerateChart from './Components/GenerateChart.js';
+import SelectSource from './Components/SelectSource';
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from 'gapi-script';
+import Login from './Login.js';
 
 class App extends Component {
 
@@ -26,7 +30,7 @@ class App extends Component {
 
         <div className="background">
           <h1>Chart</h1>
-          <GenerateChart/>
+          {/* <GenerateChart/> */}
         </div>
         <div className="background">
           <h1>Graph</h1>
