@@ -6,37 +6,38 @@ import GenerateChart from './Components/GenerateChart.js';
 
 class App extends Component {
 
-  render() {
+render() {
 
-    var content = (
-      <div className="App">
-        {/* <header className="App-header"> </header> */}
-        <div className="background">
-          <button className="mainButton" type="button">Admin</button>
-          <h1>Center for Engineering Diversity Data Display Tool</h1>
+  var content = (
+    <div className="App">
+      {/* <header className="App-header"> </header> */}
+      <div className="background">
+        <button className="mainButton" type="button">Admin</button>
+        <h1>Center for Engineering Diversity Data Display Tool</h1>
 
+
+        <div className="Checkbox-Background">
           <p>Filter Options</p>
-          <div className="Checkbox-Background">
-            <MultipleSelectGender/>
-            <MultipleSelectMajor/>
-          </div>
-          <button className="mainButton" type="button">Generate Data</button>
+          <MultipleSelectGender />
+          <MultipleSelectMajor />
         </div>
-
-
-        <div className="background">
-          <h1>Chart</h1>
-          <GenerateChart/>
-        </div>
-        <div className="background">
-          <h1>Graph</h1>
-        </div>
+        <button className="mainButton" type="button">Generate Data</button>
       </div>
-    );
-    return content;
 
 
-  }
+      <div className="background">
+        <h1>Chart</h1>
+        <GenerateChart />
+      </div>
+      <div className="background">
+        <h1>Graph</h1>
+      </div>
+    </div>
+  );
+  return content;
+
+
+}
 }
 
 

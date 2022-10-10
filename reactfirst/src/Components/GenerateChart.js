@@ -1,39 +1,32 @@
-// import React, { Component } from "react";
-import {Bar} from 'react-chartjs-2';
-
-const chartState = {
-  labels: ['January', 'February', 'March',
-           'April', 'May'],
-  datasets: [
-    {
-      label: 'Rainfall',
-      backgroundColor: 'rgba(75,192,192,1)',
-      borderColor: 'rgba(0,0,0,1)',
-      borderWidth: 2,
-      data: [65, 59, 80, 81, 56]
-    }
-  ]
-}
+import React, { useState } from "react";
+import { Bar } from 'react-chartjs-2';
+import { Chart as Chart } from 'chart.js/auto'
+import { UserData } from '../Data'
 
 export default function GenerateChart() {
 
-    return (
-        <div>
-        <Bar
-          data={chartState}
-          options={{
-            title:{
-              display:true,
-              text:'Average Rainfall per month',
-              fontSize:20
-            },
-            legend:{
-              display:true,
-              position:'right'
-            }
-          }}
-        />
-      </div>
-    );
+  // Data For Chart
+  const [userData, setUserData] = useState({
+    labels: UserData.map((data) => data.year),
+    datasets: [
+      {
+        label: "Users Gained",
+        data: UserData.map((data) => data.userGain),
+        backgroundColor: [
+          "rgba(75,192,192,1)",
+          "#ecf0f1",
+          "#50AF95",
+          "#f3ba2f",
+          "#2a71d0",
+        ],
+        borderColor: "black",
+        borderWidth: 2,
+      },
+    ],
+  });
+
+  return (
+    <Bar data={userData}/>
+  );
 
 }
