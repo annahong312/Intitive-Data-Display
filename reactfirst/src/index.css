@@ -10,9 +10,10 @@ body {
 .background {
   background-color: rgb(195, 194, 199);
   width: 99%;
-  height: 800px;
+  /* height: 800px; */
   border: 5px solid rgb(141, 29, 29);
-  padding: 5px;
+  padding-top: 20px;
+  padding-bottom: 70px;
 
 }
 
