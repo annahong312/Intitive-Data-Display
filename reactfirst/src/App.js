@@ -3,8 +3,10 @@ import React, { Component } from "react";
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
 import GenerateChart from './Components/GenerateChart.js';
+import DataTable from './Components/DataTable.js';
 import { useState } from "react"
 import { color } from '@mui/system';
+
 
 
 // Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
@@ -35,11 +37,12 @@ function App() {
 
     <div style={{paddingBottom:'300px'}}>
       <h1>Chart</h1>
-      {graphList}
+      <DataTable></DataTable>
     </div>
     
     <div className="background">
       <h1>Graph</h1>
+      {graphList}
     </div>
   </div>
   );

@@ -26,12 +26,15 @@ export default function GenerateChart() {
   });
 
   return (
-    <Line 
-      data={userData}
-      height={"80px"}
+    <div>
+      <Line
+        data={userData}
+        height={"80px"}
       // width={"30%"}
       // options={{ maintainAspectRatio: false }}
-    />
+      />
+    </div>
+
   );
 
 }
