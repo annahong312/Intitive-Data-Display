@@ -2,8 +2,9 @@ import './App.css';
 import React, { Component } from "react";
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
-import GenerateChart from './Components/GenerateChart.js';
+import GenerateGraph from './Components/GenerateGraph.js';
 import DataTable from './Components/DataTable.js';
+import GenerateChartMUI from './Components/GenerateChartMUI.js'
 import { useState } from "react"
 import { color } from '@mui/system';
 
@@ -12,10 +13,13 @@ import { color } from '@mui/system';
 // Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
 function App() {
 
+  const [chartList, setChartList] = useState([]);
 
   const [graphList, setGraphList] = useState([]);
-  const onAddBtnClick = event => {
-    setGraphList(graphList.concat(<GenerateChart />));
+  const onAddBtnClickGraph = event => {
+    setGraphList(graphList.concat(<GenerateGraph />));
+    // setChartList(chartList.concat(<DataTable />));
+    setChartList(chartList.concat(<GenerateChartMUI />));
   };
 
 
@@ -31,13 +35,14 @@ function App() {
         <MultipleSelectGender />
         <MultipleSelectMajor />
       </div>
-      <button onClick={onAddBtnClick} className="mainButton" type="button">Generate Data</button>
+      <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
     </div>
 
 
     <div style={{paddingBottom:'300px'}}>
       <h1>Chart</h1>
-      <DataTable></DataTable>
+      {/* <DataTable></DataTable> */}
+      {chartList}
     </div>
     
     <div className="background">
