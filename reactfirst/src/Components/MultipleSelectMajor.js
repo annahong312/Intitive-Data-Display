@@ -53,6 +53,17 @@ export default function MultipleSelectGender() {
     );
   };
 
+  const onMouseDown=(event) => {
+    event.stopPropagation();
+   };
+
+   const handleDelete = (value) => {
+    console.log(value);
+    setPersonName(personName.filter(item => item !== value));
+
+    
+  };
+
     //create a clear all function for the dropdown
     const clearAll = () => {
       setPersonName([]);
@@ -83,7 +94,12 @@ export default function MultipleSelectGender() {
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((value) => (
-                    <Chip key={value} label={value} />
+                    <Chip 
+                    key={value} 
+                    label={value} 
+                    onMouseDown={onMouseDown}     
+                    onDelete={() => handleDelete(value)}
+                    />
                   ))}
                 </Box>
               )}
