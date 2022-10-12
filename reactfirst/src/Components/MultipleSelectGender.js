@@ -55,7 +55,11 @@ export default function MultipleSelectGender() {
 
   const handleDelete = (value) => {
     //remove the entry from the array using setPersonName
-    setPersonName([...personName, value]);
+    // setPersonName([...personName, value]);
+    // const name = value.target.getAttribute("key");
+    console.log(value);
+    // console.log(name);
+    setPersonName(personName.filter(item => item !== value));
 
     
   };
@@ -97,10 +101,10 @@ export default function MultipleSelectGender() {
                     <Chip 
                     key={value}  
                     label={value}   
-                    // onMouseDown={onMouseDown}     
-                    // onDelete={handleDelete}
+                    onMouseDown={onMouseDown}     
+                    onDelete={() => handleDelete(value)}
                     // onClick={handleDelete}
-                    // onClick={handleChange}
+                    onClick={handleChange}
                     variant="outlined"
                     />
                   ))}
