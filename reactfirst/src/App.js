@@ -4,8 +4,7 @@ import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
-
-
+import Login from './Login.js';
 
 // Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
 function App() {
@@ -22,6 +21,7 @@ function App() {
 
   return (<div className="App">
     {/* <header className="App-header"> </header> */}
+    <Login/>
     <div className="background" >
       <button className="mainButton" type="button">Admin</button>
       <h1>Center for Engineering Diversity Data Display Tool</h1>
