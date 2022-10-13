@@ -1,5 +1,5 @@
 // import React, { Component } from "react";
-/*import {Bar} from 'react-chartjs-2';
+import {Bar} from 'react-chartjs-2';
 
 const chartState = {
   labels: ['January', 'February', 'March',
@@ -36,4 +36,4 @@ export default function GenerateChart() {
       </div>
     );
 
-}*/
+}
