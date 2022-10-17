@@ -64,10 +64,6 @@ export default function MultipleSelectGender() {
     
   };
 
-  const handleClick = () => {
-    console.info('You clicked the Chip.');
-  };
-
   //create a clear all function for the dropdown
   const clearAll = () => {
     setPersonName([]);

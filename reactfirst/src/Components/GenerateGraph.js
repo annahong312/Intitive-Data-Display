@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Bar, Line } from 'react-chartjs-2';
-import { Chart as Chart } from 'chart.js/auto'
+import { Line } from 'react-chartjs-2';
+import { Chart } from 'chart.js/auto'
 import { UserData } from '../Data'
 
 export default function GenerateGraph() {
@@ -39,6 +39,7 @@ export default function GenerateGraph() {
 
   return (
     <div>
+      <button onClick={() => setUserData(userData)}>Reset</button>
       <Line
         data={userData}
         height={"80px"}

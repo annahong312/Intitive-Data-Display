@@ -1,12 +1,9 @@
+import React, { useState } from "react";
 import './App.css';
-import React, { Component } from "react";
+import GenerateChartMUI from './Components/GenerateChartMUI.js';
+import GenerateGraph from './Components/GenerateGraph.js';
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
-import GenerateGraph from './Components/GenerateGraph.js';
-import DataTable from './Components/DataTable.js';
-import GenerateChartMUI from './Components/GenerateChartMUI.js'
-import { useState } from "react"
-import { color } from '@mui/system';
 
 
 
