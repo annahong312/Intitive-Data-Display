@@ -1,7 +1,27 @@
 import React, { useState } from "react";
 import { Line } from 'react-chartjs-2';
-import { Chart } from 'chart.js/auto'
+// import { Chart } from 'chart.js/auto'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { UserData } from '../Data'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function GenerateGraph() {
 
