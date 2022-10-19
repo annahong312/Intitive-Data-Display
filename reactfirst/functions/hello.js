@@ -5,7 +5,6 @@ const doc = new GoogleSpreadsheet('11pZ7sGTtq9n8xJgIBmlO8mVbDCSyI-oD2Y_3s9kIHFs'
 exports.handler = async function (event, context) {
   try {
     console.time("Auth");
-    console.log(process.env.GOOGLE_PRIVATE_KEY);
     await doc.useServiceAccountAuth({
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
