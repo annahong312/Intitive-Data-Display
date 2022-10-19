@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import jwt_decode from "jwt-decode";
-import { getListSubheaderUtilityClass } from "@mui/material";
  
 export default function Login() {
     // want to create this as a global state so its accessible 
@@ -43,7 +42,7 @@ export default function Login() {
             <div id="signInDiv"></div>
             { Object.keys(user).length !== 0 &&
                 <div>
-                    <img src={user.picture} alt="hello"></img>
+                    <img src={user.picture} alt="Profile Pic"></img>
                     <h3>{user.name}</h3>
                     <button onClick={ (e) => handleSignOut(e) }>Sign Out</button>
                 </div>
