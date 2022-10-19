@@ -27,7 +27,7 @@ class App extends Component {
 
         <div className="background">
           <h1>Chart</h1>
-          <GenerateChart/>
+          {/* <GenerateChart/> */}
         </div>
         <div className="background">
           <h1>Graph</h1>
