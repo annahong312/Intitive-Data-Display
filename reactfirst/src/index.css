@@ -77,3 +77,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.tablinks{
+  background-color: #faeebe;
+  width:150px;
+}
+
+.tablinks label:hover {
+  background-color: #1e90ff;
+}
