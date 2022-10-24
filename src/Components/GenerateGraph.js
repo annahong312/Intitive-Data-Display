@@ -12,6 +12,7 @@ import {
   Legend,
 } from 'chart.js';
 import { UserData } from '../Data'
+import { UserData2 } from '../Data2'
 
 ChartJS.register(
   CategoryScale,
@@ -23,15 +24,19 @@ ChartJS.register(
   Legend
 );
 
-export default function GenerateGraph() {
+export default function GenerateGraph(index) {
 
   // Data For Graph
+  var dataFromFile = UserData;
+  if (index % 2 === 0) {
+    dataFromFile = UserData2;
+  }
   const [userData, setUserData] = useState({
     labels: UserData.map((data) => data.year),
     datasets: [
       {
         label: "Users Gained",
-        data: UserData.map((data) => data.userGain),
+        data: dataFromFile.map((data) => data.userGain),
         backgroundColor: [
           "rgba(75,192,192,1)",
           "#ecf0f1",

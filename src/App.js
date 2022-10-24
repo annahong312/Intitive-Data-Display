@@ -17,9 +17,10 @@ function App() {
   // build tab list
   const [tabList, setTabList] = useState([]);
   const onAddBtnClickGraph = event => {
-    setGraphList(graphList.concat(<GenerateGraph />));
+
+    setGraphList(graphList.concat(<GenerateGraph index={curIndex + 1}/>));
     // setChartList(chartList.concat(<DataTable />));
-    setChartList(chartList.concat(<GenerateChartMUI />));
+    setChartList(chartList.concat(<GenerateChartMUI index={curIndex + 1}/>));
     curIndex++;
     maxIndex++;
     setTabList(tabList.concat(<button class="tablinks" onclick="">Tab {curIndex+1}</button>));

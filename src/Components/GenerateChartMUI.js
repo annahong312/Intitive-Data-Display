@@ -32,7 +32,7 @@ function createData(name, calories, fat, carbs, protein) {
   };
 }
 
-const rows = [
+const rows1 = [
   createData('Cupcake', 305, 3.7, 67, 4.3),
   createData('Donut', 452, 25.0, 51, 4.9),
   createData('Eclair', 262, 16.0, 24, 6.0),
@@ -46,6 +46,22 @@ const rows = [
   createData('Marshmallow', 318, 0, 81, 2.0),
   createData('Nougat', 360, 19.0, 9, 37.0),
   createData('Oreo', 437, 18.0, 63, 4.0),
+];
+
+const rows2 = [
+  createData('Cupcake', 500, 3.7, 67, 4.3),
+  createData('Donut', 325, 25.0, 51, 4.9),
+  createData('Eclair', 178, 16.0, 24, 6.0),
+  createData('Frozen yoghurt', 200, 6.0, 24, 4.0),
+  createData('Gingerbread', 90, 16.0, 49, 3.9),
+  createData('Honeycomb', 390, 3.2, 87, 6.5),
+  createData('Ice cream sandwich', 597, 9.0, 37, 4.3),
+  createData('Jelly Bean', 230, 0.0, 94, 0.0),
+  createData('KitKat', 175, 26.0, 65, 7.0),
+  createData('Lollipop', 86, 0.2, 98, 0.0),
+  createData('Marshmallow', 289, 0, 81, 2.0),
+  createData('Nougat', 488, 19.0, 9, 37.0),
+  createData('Oreo', 429, 18.0, 63, 4.0),
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -222,7 +238,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function EnhancedTable(index) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -230,13 +246,18 @@ export default function EnhancedTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  // define the data values for rows
+  const rows = (index % 2 > 0) ? rows1 : rows2;
+
+  console.log(index);
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
+  const handleSelectAllClick = (event, rows) => {
     if (event.target.checked) {
       const newSelected = rows.map((n) => n.name);
       setSelected(newSelected);
