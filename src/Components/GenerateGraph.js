@@ -27,12 +27,12 @@ ChartJS.register(
 export default function GenerateGraph(index) {
 
   // Data For Graph
-  var dataFromFile = UserData;
-  if (index % 2 === 0) {
-    dataFromFile = UserData2;
-  }
-  const [userData, setUserData] = useState({
-    labels: UserData.map((data) => data.year),
+  const dataFromFile = parseInt(index.index) % 2 > 0 ? UserData2 : UserData;
+  console.log(index.index + " is index");
+  console.log(dataFromFile);
+
+  const [data, setData] = useState({
+    labels: dataFromFile.map((data) => data.year),
     datasets: [
       {
         label: "Users Gained",
@@ -62,11 +62,14 @@ export default function GenerateGraph(index) {
   }
   });
 
+  // print usergain from data hook object
+  console.log(data.datasets[0].data + " is user gain");
+  // console.log(data.userGain + " is userData");
   return (
     <div>
-      <button onClick={() => setUserData(userData)}>Reset</button>
+      <button onClick={() => setData(data)}>Reset</button>
       <Line
-        data={userData}
+        data={data}
         height={"80px"}
       // width={"30%"}
       // options={{ maintainAspectRatio: false }}

@@ -247,9 +247,15 @@ export default function EnhancedTable(index) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   // define the data values for rows
-  const rows = (index % 2 > 0) ? rows1 : rows2;
+  // const rows = (index % 2 == 0) ? rows1 : rows2; //call apis to generate a "rows" array
+  var curIndex = parseInt(index.index) % 2;
+  // console.log("curIndex: " + curIndex);
+  const rows = (curIndex > 0) ? rows1 : rows2;
+  
+  // console.log("index before: " + parseInt(index.index));
+  // console.log(index);
+  // console.log(rows);
 
-  console.log(index);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

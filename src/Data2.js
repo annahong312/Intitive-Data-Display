@@ -3,63 +3,30 @@ export const UserData2 = [
     id: 1,
     year: 2016,
     userGain: 20000,
-    userLost: 823,
+    userLost: 560,
   },
   {
     id: 2,
     year: 2017,
     userGain: 20677,
-    userLost: 345,
+    userLost: 865,
   },
   {
     id: 3,
     year: 2018,
     userGain: 90000,
-    userLost: 555,
+    userLost: 234,
   },
   {
     id: 4,
     year: 2019,
     userGain: 5000,
-    userLost: 4555,
+    userLost: 7890,
   },
   {
     id: 5,
     year: 2020,
     userGain: 14500,
-    userLost: 2340,
+    userLost: 4689,
   },
 ];
-
-// export const UserData = [
-//     {
-//       id: 1,
-//       year: 2016,
-//       userGain: 80000,
-//       userLost: 823,
-//     },
-//     {
-//       id: 2,
-//       year: 2017,
-//       userGain: 45677,
-//       userLost: 345,
-//     },
-//     {
-//       id: 3,
-//       year: 2018,
-//       userGain: 78888,
-//       userLost: 555,
-//     },
-//     {
-//       id: 4,
-//       year: 2019,
-//       userGain: 90000,
-//       userLost: 4555,
-//     },
-//     {
-//       id: 5,
-//       year: 2020,
-//       userGain: 4300,
-//       userLost: 234,
-//     },
-//   ];

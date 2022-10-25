@@ -18,13 +18,37 @@ function App() {
   const [tabList, setTabList] = useState([]);
   const onAddBtnClickGraph = event => {
 
-    setGraphList(graphList.concat(<GenerateGraph index={curIndex + 1}/>));
-    // setChartList(chartList.concat(<DataTable />));
-    setChartList(chartList.concat(<GenerateChartMUI index={curIndex + 1}/>));
     curIndex++;
     maxIndex++;
-    setTabList(tabList.concat(<button class="tablinks" onclick="">Tab {curIndex+1}</button>));
+
+    setGraphList(graphList.concat(<GenerateGraph index={maxIndex }/>));
+    // setChartList(chartList.concat(<DataTable />));
+    setChartList(chartList.concat(<GenerateChartMUI index={maxIndex }/>));
+    // if (curIndex < maxIndex) {
+    //   curIndex = maxIndex;
+    // }
+    setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
   };
+
+  // make a function for clicking tab event
+  const onTabClick = event => {
+    // get the index of the tab
+    var index = event.target.innerHTML.substring(4);
+    console.log(index + " is tab index");
+    // set the index of the tab to be the current index
+    curIndex = index - 1;
+    console.log(chartList);
+    console.log(" done");
+    // set the graph list to be the graph list at the index
+    // setGraphList(graphList[curIndex]);
+    // set the chart list to be the chart list at the index
+    // setChartList(chartList[curIndex]);
+
+  };
+
+  function tabSelector() {
+    return curIndex;
+  }
 
 
   return (<div className="App">
@@ -42,14 +66,16 @@ function App() {
       <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
     </div>
 
-    <div class="tab">
-      {tabList}
+    <div className="tab">
+      {tabList && tabList.map((tab, index) => (
+        <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button>)
+      )}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
       <h1>Chart</h1>
-      {/* <DataTable></DataTable> */}
-      {chartList[curIndex]}
+      {/* {chartList[curIndex]} */}
+      {chartList[tabSelector()]}
     </div>
 
     
