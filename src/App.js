@@ -11,11 +11,14 @@ var maxIndex = -1;
 // Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
 function App() {
 
+  
   const [chartList, setChartList] = useState([]);
 
   const [graphList, setGraphList] = useState([]);
+  const [currChart, setCurrChart] = useState([]);
   // build tab list
   const [tabList, setTabList] = useState([]);
+  // let TESTCHART = chartList[0];
   const onAddBtnClickGraph = event => {
 
     curIndex++;
@@ -28,6 +31,7 @@ function App() {
     //   curIndex = maxIndex;
     // }
     setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
+    setCurrChart(chartList[maxIndex]);
   };
 
   // make a function for clicking tab event
@@ -37,8 +41,8 @@ function App() {
     console.log(index + " is tab index");
     // set the index of the tab to be the current index
     curIndex = index - 1;
-    console.log(chartList);
-    console.log(" done");
+    setCurrChart(chartList[curIndex]);
+   
     // set the graph list to be the graph list at the index
     // setGraphList(graphList[curIndex]);
     // set the chart list to be the chart list at the index
@@ -75,7 +79,8 @@ function App() {
     <div style={{paddingBottom:'300px'}}>
       <h1>Chart</h1>
       {/* {chartList[curIndex]} */}
-      {chartList[tabSelector()]}
+      {/* {chartList[tabSelector()]} */}
+      {currChart}
     </div>
 
     
