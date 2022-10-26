@@ -44,7 +44,7 @@ function App() {
   const onTabClick = event => {
     // get the index of the tab
     var index = event.target.innerHTML.substring(4);
-    console.log(index + " is tab index");
+    // console.log(index + " is tab index");
     // set the index of the tab to be the current index
     curIndex = index - 1;
     setCurrChart(chartList[curIndex]);
@@ -56,6 +56,52 @@ function App() {
 
   };
 
+  // make function to delete a tab from the list
+  const onDeleteTab = (index) => {
+    // get the index of the tab
+    // var index = event.target.innerHTML.substring(4);
+    console.log(index + " is delete tab index");
+    if (index === 0 && chartList.length === 1) {
+      // set chart as empty list
+      setChartList([]);
+      // set graph as empty list
+      setGraphList([]);
+      // set tab as empty list
+      setTabList([]);
+      // set current chart as empty list
+      setCurrChart([]);
+      // set current index as -1
+      curIndex = -1;
+      // set max index as -1
+      maxIndex = -1;
+
+    } else {
+      // remove the tab from the tab list
+      var toRemove = tabList[index];
+      setTabList(tabList.filter(item => item !== toRemove));
+      // tabList.splice(index, 1);
+      // remove the chart from the chart list
+      var toRemoveChart = chartList[index];
+      setChartList(chartList.filter(item => item !== toRemoveChart));
+      // remove the graph from the graph list
+      var toRemoveGraph = graphList[index];
+      setGraphList(graphList.filter(item => item !== toRemoveGraph));
+      // graphList.splice(index, 1);
+      
+      if (index === curIndex) {
+        curIndex++;
+      } 
+
+      // console.log(curIndex + " is curIndex");
+      maxIndex = chartList.length;
+      // console.log(maxIndex + " is maxIndex");
+      // console.log(chartList[curIndex] + " is chartList[curIndex]");
+
+      setCurrChart(chartList[curIndex]);
+    }
+
+  };
+
   // function tabSelector() {
   //   return curIndex;
   // }
@@ -63,6 +109,7 @@ function App() {
 
   return (<div className="App">
     {/* <header className="App-header"> </header> */}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
     <div className="background" >
       <button className="mainButton" type="button">Admin</button>
       <h1>Center for Engineering Diversity Data Display Tool</h1>
@@ -78,8 +125,14 @@ function App() {
 
     <div className="tab">
       {tabList && tabList.map((tab, index) => (
-        <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button>)
+        <div>
+          <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
+          <button class="btn" onClick={() => onDeleteTab(index)}><i class="fa fa-trash"></i></button>
+          </div>)
       )}
+      {/* {tabList && tabList.map((tab, index) => (
+        <i class="material-icons">delete</i>)
+      )} */}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
