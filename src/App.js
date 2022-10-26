@@ -20,18 +20,24 @@ function App() {
   const [tabList, setTabList] = useState([]);
   // let TESTCHART = chartList[0];
   const onAddBtnClickGraph = event => {
-
-    curIndex++;
-    maxIndex++;
-
-    setGraphList(graphList.concat(<GenerateGraph index={maxIndex }/>));
-    // setChartList(chartList.concat(<DataTable />));
-    setChartList(chartList.concat(<GenerateChartMUI index={maxIndex }/>));
     // if (curIndex < maxIndex) {
     //   curIndex = maxIndex;
     // }
+    curIndex++;
+    maxIndex++;
+
+    // setChartList(chartList.concat(<DataTable />));
+    var newChart = <GenerateChartMUI index={maxIndex }/>;
+    var newGraph = <GenerateGraph index={maxIndex }/>;
+    setChartList(chartList.concat(newChart));
+    setGraphList(graphList.concat(newGraph));
+    // console.log(newGraph + " new graph");
+    
     setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
-    setCurrChart(chartList[maxIndex]);
+    // console.log(chartList + " is chartList");
+    // console.log(maxIndex + " is maxIndex");
+    setCurrChart(newChart);
+    // console.log(currChart);
   };
 
   // make a function for clicking tab event
@@ -50,9 +56,9 @@ function App() {
 
   };
 
-  function tabSelector() {
-    return curIndex;
-  }
+  // function tabSelector() {
+  //   return curIndex;
+  // }
 
 
   return (<div className="App">
