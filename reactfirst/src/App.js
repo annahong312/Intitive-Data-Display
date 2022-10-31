@@ -2,8 +2,8 @@ import './App.css';
 import React, { Component } from "react";
 import MultipleSelectGender from './Components/MultipleSelectGender.js';
 import MultipleSelectMajor from './Components/MultipleSelectMajor.js';
-import GenerateChart from './Components/GenerateChart.js';
-import Login from './Login.js';
+// import GenerateChart from './Components/GenerateChart.js';
+import Loginout from './Loginout.js';
 
 class App extends Component {
 
@@ -11,7 +11,7 @@ class App extends Component {
     var content = (
       <div className="App">
         {/* <header className="App-header"> </header> */}
-        <Login/>
+        <Loginout/>
         <div className="background">
           <button className="mainButton" type="button">Admin</button>
           <h1>Center for Engineering Diversity Data Display Tool</h1>
