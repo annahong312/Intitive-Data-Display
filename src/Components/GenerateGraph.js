@@ -28,7 +28,7 @@ export default function GenerateGraph(index) {
 
   // Data For Graph
   const dataFromFile = parseInt(index.index) % 2 > 0 ? UserData2 : UserData;
-  console.log(index.index + " is index");
+  // console.log(index.index + " is index");
   // print data from file user gain values
 
   // console.log(dataFromFile[0][2] + " is dataFromFile");
@@ -66,7 +66,7 @@ export default function GenerateGraph(index) {
 
   // print usergain from data hook object
   // console.log(data.datasets[0].data + " is user gain");
-  console.log(dataFromFile.map((data) => data.userGain));
+  // console.log(dataFromFile.map((data) => data.userGain));
   // console.log(data.userGain + " is userData");
   return (
     <div>

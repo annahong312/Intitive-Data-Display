@@ -98,6 +98,6 @@ code {
   width:150px;
 }
 
-.tablinks label:hover {
-  background-color: #1e90ff;
+.tablinks:hover {
+  background-color: white;
 }
