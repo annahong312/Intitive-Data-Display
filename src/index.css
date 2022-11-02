@@ -98,6 +98,11 @@ code {
   width:150px;
 }
 
+.tablinksActive{
+  background-color: #00F;
+  width:150px;
+}
+
 .tablinks:hover {
-  background-color: white;
+  background-color: #fff67a;
 }

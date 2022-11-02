@@ -26,7 +26,6 @@ const namesMajors = [
   'EE',
 ];
 
-// Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
 function App() {
 
   const [chartList, setChartList] = useState([]);
@@ -34,6 +33,10 @@ function App() {
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
   const [filterList, setFilterList] = useState([]);
+
+
+  const [tabIsActive, setTabIsActive] = useState(0);
+
 
   const createMultipleSelect = () => {
     setFilterList([]);
@@ -85,35 +88,25 @@ function App() {
     curIndex++;
     maxIndex++;
 
-    // setChartList(chartList.concat(<DataTable />));
     var newChart = <GenerateChartMUI index={maxIndex }/>;
     var newGraph = <GenerateGraph index={maxIndex }/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
-    // console.log(newGraph + " new graph");
     
     setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
-    // console.log(chartList + " is chartList");
-    // console.log(maxIndex + " is maxIndex");
     setCurrChart(newChart);
-    // console.log(currChart);
+
   };
 
   // make a function for clicking tab event
   const onTabClick = event => {
-    // createMultipleSelect();
     // get the index of the tab
     var index = event.target.innerHTML.substring(4);
-    // console.log(index + " is tab index");
+
     // set the index of the tab to be the current index
     curIndex = index - 1;
     setCurrChart(chartList[curIndex]);
-   
-    // set the graph list to be the graph list at the index
-    // setGraphList(graphList[curIndex]);
-    // set the chart list to be the chart list at the index
-    // setChartList(chartList[curIndex]);
-
+    setTabIsActive(curIndex);
   };
 
   // make function to delete a tab from the list
@@ -151,8 +144,6 @@ function App() {
       if (index === curIndex) {
         curIndex++;
       } 
-
-      // console.log(curIndex + " is curIndex");
       maxIndex = chartList.length;
 
       setCurrChart(chartList[curIndex]);
@@ -180,22 +171,14 @@ function App() {
       <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
     </div>
 
+
+    {/* Map out tabs: if the current tab is being mapped, change the highlight*/}
     <div>
       {tabList && tabList.map((tab, index) => (
         <span  style={{paddingRight: 10 }}>
-          <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
-          <button className="btn" onClick={() => onDeleteTab(index)}><i class="fa fa-trash"></i></button>
+          <button style={{marginRight: 2, backgroundColor: (tabIsActive==index) ? 'white' : ''}} className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
+          <button style={{marginTop: 1 }} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
         </span> ))}
-      
-      {/* // Original
-        // <div>
-        //   <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
-        //   <button className="btn" onClick={() => onDeleteTab(index)}><i class="fa fa-trash"></i></button>
-        // </div>) */}
-      
-      {/* {tabList && tabList.map((tab, index) => (
-        <i class="material-icons">delete</i>)
-      )} */}
     </div>
 
     <div style={{paddingBottom:'100px'}}>
