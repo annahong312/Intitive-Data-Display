@@ -19,12 +19,8 @@ const MenuProps = {
     },
   },
 };
-
-const names = [
-  'Male',
-  'Female',
-  'Non-binary',
-];
+// var names;
+// var names = [];
 
 function getStyles(name, personName, theme) {
   return {
@@ -35,18 +31,38 @@ function getStyles(name, personName, theme) {
   };
 }
 
-export default function MultipleSelectGender() {
+var usedNameVals = [];
+
+function nameValUpdate(curNameVals) {
+    usedNameVals = curNameVals;
+    console.log("usedNameVals: " + usedNameVals);
+}
+
+export const getUpdatedNameVals = () => {
+    return usedNameVals;
+}
+
+
+export default function MultipleSelect(givenNames) {
+    // console.log(givenNames);
+  var names = givenNames.givenNames;
+  var label = givenNames.label;
+//   console.log(names + " names");
+//   console.log(label + " label");
   const theme = useTheme();
-  const [genderName, setGenderName] = React.useState([]);
+  const [nameVals, setNameVals] = React.useState([]);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setGenderName(
+    setNameVals(
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
+    
+    console.log("nameVals: " + nameVals);
+    nameValUpdate(nameVals);
   };
 
   const onMouseDown=(event) => {
@@ -56,22 +72,20 @@ export default function MultipleSelectGender() {
   const handleDelete = (value) => {
     //remove the entry from the array using setPersonName
     // setPersonName([...personName, value]);
-    // const name = value.target.getAttribute("key");
-    console.log(value);
-    // console.log(name);
-    setGenderName(genderName.filter(item => item !== value));
+    // console.log(value);
+    setNameVals(nameVals.filter(item => item !== value));
+    nameValUpdate(nameVals);
 
-    
   };
 
   //create a clear all function for the dropdown
   const clearAll = () => {
-    setGenderName([]);
+    setNameVals([]);
   }
 
   //create a select all function for the dropdown
   const selectAll = () => {
-    setGenderName(names);
+    setNameVals(names);
   }
 
   return (
@@ -83,14 +97,14 @@ export default function MultipleSelectGender() {
       >
         <Grid item >
               <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel id="demo-multiple-chip-label">Gender</InputLabel>
+            <InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
             <Select
               labelId="demo-multiple-chip-label"
               id="select-multiple-chip" 
               multiple
-              value={genderName}
+              value={nameVals}
               onChange={handleChange}
-              input={<OutlinedInput id="select-multiple-chip" label="Gender" />} //select-multiple-chip
+              input={<OutlinedInput id="select-multiple-chip" label={label}/>} //select-multiple-chip
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((value) => (
@@ -112,7 +126,7 @@ export default function MultipleSelectGender() {
                 <MenuItem
                   key={name}
                   value={name}
-                  style={getStyles(name, genderName, theme)}
+                  style={getStyles(name, nameVals, theme)}
                 >
                   {name}
                 </MenuItem>
