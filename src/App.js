@@ -72,6 +72,8 @@ function App() {
 
     var firstFilter = filterList[0];
     console.log(firstFilter);
+    var secondFilter = filterList[1];
+    console.log(secondFilter);
 
     var vals = getUpdatedNameVals();
     console.log(vals + " vals");

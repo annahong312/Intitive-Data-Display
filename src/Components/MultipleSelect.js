@@ -61,8 +61,7 @@ export default function MultipleSelect(givenNames) {
       typeof value === 'string' ? value.split(',') : value,
     );
     
-    console.log("nameVals: " + nameVals);
-    nameValUpdate(nameVals);
+    nameValUpdate(value);
   };
 
   const onMouseDown=(event) => {
@@ -74,18 +73,21 @@ export default function MultipleSelect(givenNames) {
     // setPersonName([...personName, value]);
     // console.log(value);
     setNameVals(nameVals.filter(item => item !== value));
-    nameValUpdate(nameVals);
+    var newNameVals = nameVals.filter(item => item !== value);
+    nameValUpdate(newNameVals);
 
   };
 
   //create a clear all function for the dropdown
   const clearAll = () => {
     setNameVals([]);
+    nameValUpdate([]);
   }
 
   //create a select all function for the dropdown
   const selectAll = () => {
     setNameVals(names);
+    nameValUpdate(names);
   }
 
   return (
