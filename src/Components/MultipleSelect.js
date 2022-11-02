@@ -31,15 +31,15 @@ function getStyles(name, personName, theme) {
   };
 }
 
-var nameVals = [];
+var usedNameVals = [];
 
 function nameValUpdate(curNameVals) {
-    nameVals = curNameVals;
-    
+    usedNameVals = curNameVals;
+    console.log("usedNameVals: " + usedNameVals);
 }
 
 export const getUpdatedNameVals = () => {
-    return nameVals;
+    return usedNameVals;
 }
 
 
@@ -60,7 +60,8 @@ export default function MultipleSelect(givenNames) {
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
-
+    
+    console.log("nameVals: " + nameVals);
     nameValUpdate(nameVals);
   };
 
