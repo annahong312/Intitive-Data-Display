@@ -26,23 +26,34 @@ const namesMajors = [
   'EE',
 ];
 
+// const dropdownLabels = ["Gender", "Major"];
+
 function App() {
 
   const [chartList, setChartList] = useState([]);
 
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
+  const [dropdownList, setDropdownList] = useState([]);
   const [filterList, setFilterList] = useState([]);
+  const [currFilters, setCurrFilters] = useState([]);
 
 
   const [tabIsActive, setTabIsActive] = useState(0);
 
-
   const createMultipleSelect = () => {
-    setFilterList([]);
+    // setDropdownList([]);
+    // var newFilterDropdowns = [];
+    // for (var i = 0; i < dropdownLabels.length; i++) {
+    //   console.log("dropdownLabels[i]: " + dropdownLabels[i]);
+    //   var curLabel = dropdownLabels[i];
+    //   newFilterDropdowns.push(<MultipleSelect givenNames={namesGender} label={curLabel}/>);
+    //   // setFilterList(filterList => [filterList.concat(<MultipleSelect givenNames={namesGender} label={curLabel} />)]);
+    // }
+
     var newFilterDropdown = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    console.log(newFilterDropdown);
-    setFilterList(filterList.concat(newFilterDropdown));
+    // console.log(newFilterDropdown);
+    setDropdownList(dropdownList.concat(newFilterDropdown));
   };
 
   useEffect(() => { 
@@ -68,18 +79,14 @@ function App() {
   const onAddBtnClickGraph = event => {
     
     // get current filters selected
-    var filters = filterList.map((filter) => {
-      return filter.props.givenNames;
-    });
-    console.log(filters + " filters");
-
-    var firstFilter = filterList[0];
-    console.log(firstFilter);
-    var secondFilter = filterList[1];
-    console.log(secondFilter);
+    // var filters = dropdownList.map((filter) => {
+    //   return filter.props.givenNames;
+    // });
+    // console.log(filters + " filters");
 
     var vals = getUpdatedNameVals();
-    console.log(vals + " vals");
+    console.log(vals.get("Gender") + " vals at gender");
+    console.log(vals.get("Major") + " vals at major");
 
     // var nameSelect = filterList[0].getUpdatedNameVals();
     // console.log(nameSelect);
@@ -88,13 +95,20 @@ function App() {
     curIndex++;
     maxIndex++;
 
+    setFilterList(filterList.concat(vals));
+    console.log(filterList + " filterList");
+    console.log(filterList.length + " filterList length");
     var newChart = <GenerateChartMUI index={maxIndex }/>;
     var newGraph = <GenerateGraph index={maxIndex }/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
+    // print length of chartList
+    console.log(chartList.length + " chartList length");
     
     setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
     setCurrChart(newChart);
+    setTabIsActive(maxIndex);
+    setCurrFilters(vals);
 
   };
 
@@ -106,6 +120,7 @@ function App() {
     // set the index of the tab to be the current index
     curIndex = index - 1;
     setCurrChart(chartList[curIndex]);
+    setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
   };
 
@@ -123,6 +138,8 @@ function App() {
       setTabList([]);
       // set current chart as empty list
       setCurrChart([]);
+      // set current filters as empty list
+      setCurrFilters([]);
       // set current index as -1
       curIndex = -1;
       // set max index as -1
@@ -139,7 +156,10 @@ function App() {
       // remove the graph from the graph list
       var toRemoveGraph = graphList[index];
       setGraphList(graphList.filter(item => item !== toRemoveGraph));
-      // graphList.splice(index, 1);
+      
+      // set filter list
+      var toRemoveFilter = filterList[index];
+      setFilterList(filterList.filter(item => item !== toRemoveFilter));     
       
       if (index === curIndex) {
         curIndex++;
@@ -147,6 +167,7 @@ function App() {
       maxIndex = chartList.length;
 
       setCurrChart(chartList[curIndex]);
+      setCurrFilters(filterList[curIndex]);
     }
 
   };
@@ -166,7 +187,7 @@ function App() {
         {/* Todo: Use a loop to walk through and generate each filter */}
         {/* <MultipleSelect  givenNames={namesGender} label="Gender" /> */}
         {/* <MultipleSelect  givenNames={namesMajors} label="Major" /> */}
-        {filterList}
+        {dropdownList}
       </div>
       <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
     </div>
@@ -176,16 +197,14 @@ function App() {
     <div>
       {tabList && tabList.map((tab, index) => (
         <span  style={{paddingRight: 10 }}>
-          <button style={{marginRight: 2, backgroundColor: (tabIsActive==index) ? 'white' : ''}} className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
+          <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? 'white' : ''}} className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
           <button style={{marginTop: 1 }} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
         </span> ))}
     </div>
 
     <div style={{paddingBottom:'100px'}}>
       <h1>Filters</h1>
-      {/* print all filter options from MultipleSelectGender below */}
-      
-
+      {currFilters}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
