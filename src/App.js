@@ -37,6 +37,7 @@ function App() {
   const [dropdownList, setDropdownList] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
+  const [currTabName, setCurrTabName] = useState("");
 
 
   const [tabIsActive, setTabIsActive] = useState(0);
@@ -90,8 +91,7 @@ function App() {
     console.log(filterMap.get("Gender") + " vals at gender");
     console.log(filterMap.get("Major") + " vals at major");
 
-    // var nameSelect = filterList[0].getUpdatedNameVals();
-    // console.log(nameSelect);
+    
 
 
     curIndex++;
@@ -109,8 +109,11 @@ function App() {
     
     setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
     setCurrChart(newChart);
-    setTabIsActive(maxIndex);
+    setTabIsActive(curIndex);
     setCurrFilters(filterMap);
+
+    // Update the current tab name
+    setCurrTabName("Tab " + (curIndex + 1));
 
   };
 
@@ -125,6 +128,9 @@ function App() {
     setCurrChart(chartList[curIndex]);
     setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
+
+    // Update the current tab name
+    setCurrTabName("Tab " + index);
   };
 
   // make function to delete a tab from the list
@@ -174,6 +180,9 @@ function App() {
       console.log(filterList[curIndex] + " filterList on delete tab");
     }
 
+    // Update the current tab name
+    setCurrTabName("Tab " + curIndex);
+
   };
 
   // function for formatting print the filter map out nicely
@@ -214,6 +223,7 @@ function App() {
           <button style={{marginTop: 1 }} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
         </span> ))}
     </div>
+    <h3>{currTabName}</h3>
 
     <div style={{paddingBottom:'100px'}}>
       <h1>Filters</h1>
