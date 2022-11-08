@@ -85,8 +85,10 @@ function App() {
     // console.log(filters + " filters");
 
     var vals = getUpdatedNameVals();
-    console.log(vals.get("Gender") + " vals at gender");
-    console.log(vals.get("Major") + " vals at major");
+    var filterMap = new Map(JSON.parse(
+      JSON.stringify(Array.from(vals))));
+    console.log(filterMap.get("Gender") + " vals at gender");
+    console.log(filterMap.get("Major") + " vals at major");
 
     // var nameSelect = filterList[0].getUpdatedNameVals();
     // console.log(nameSelect);
@@ -95,9 +97,9 @@ function App() {
     curIndex++;
     maxIndex++;
 
-    setFilterList(filterList.concat(vals));
-    console.log(filterList + " filterList");
-    console.log(filterList.length + " filterList length");
+    setFilterList(filterList.concat(filterMap));
+    console.log(filterList[maxIndex] + " filterList");
+    // console.log(filterList.length + " filterList length");
     var newChart = <GenerateChartMUI index={maxIndex }/>;
     var newGraph = <GenerateGraph index={maxIndex }/>;
     setChartList(chartList.concat(newChart));
@@ -108,7 +110,7 @@ function App() {
     setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
     setCurrChart(newChart);
     setTabIsActive(maxIndex);
-    setCurrFilters(vals);
+    setCurrFilters(filterMap);
 
   };
 
@@ -119,6 +121,7 @@ function App() {
 
     // set the index of the tab to be the current index
     curIndex = index - 1;
+    console.log(filterList[curIndex] + " filterList on tab switch");
     setCurrChart(chartList[curIndex]);
     setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
@@ -168,8 +171,18 @@ function App() {
 
       setCurrChart(chartList[curIndex]);
       setCurrFilters(filterList[curIndex]);
+      console.log(filterList[curIndex] + " filterList on delete tab");
     }
 
+  };
+
+  // function for formatting print the filter map out nicely
+  const printFilterMap = (filterMap) => {
+    var str = "";
+    for (var [key, value] of filterMap) {
+      str += key + ": " + value + "\n";
+    }
+    return str;
   };
 
 
@@ -204,7 +217,9 @@ function App() {
 
     <div style={{paddingBottom:'100px'}}>
       <h1>Filters</h1>
-      {currFilters}
+      {/* print filters with printFilterMap */}
+      {currFilters && printFilterMap(currFilters)}
+      {/* {currFilters} */}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
