@@ -50,6 +50,7 @@ body {
   padding: 2px 4px; /* Some padding */
   font-size: 16px; /* Set a font size */
   cursor: pointer; /* Mouse pointer on hover */
+  border-radius: 3px;
 }
 
 /* Darker background on mouse-over */
@@ -96,6 +97,8 @@ code {
 .tablinks{
   background-color: #faeebe;
   width:150px;
+  height: 40px;
+  border-radius: 4px;
 }
 
 .tablinksActive{

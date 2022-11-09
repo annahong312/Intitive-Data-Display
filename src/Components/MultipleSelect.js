@@ -34,7 +34,9 @@ var usedNameVals = new Map();
 
 function nameValUpdate(curNameVals, label) {
     usedNameVals = usedNameVals.set(label, curNameVals);
-    console.log("usedNameVals: " + usedNameVals.get(label), label);
+    if (curNameVals.length < 1) {
+      usedNameVals = usedNameVals.delete(label);
+    }
 }
 
 export const getUpdatedNameVals = () => {
