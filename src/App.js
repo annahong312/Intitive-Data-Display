@@ -5,6 +5,10 @@ import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
 // import getUpdatedNameVals from "./Components/MultipleSelect";
 import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js'
+import { useGoogleLogin } from '@react-oauth/google';
+import { GetAttributes, GetData } from './Scripts'
+import { gapi } from 'gapi-script';
+
   
 var curIndex = -1;
 var maxIndex = -1;
@@ -26,14 +30,41 @@ const namesMajors = [
   'EE',
 ];
 
+gapi.load('client:auth2', initClient);
+function initClient() {
+  gapi.client.init( {
+    discoveryDocs: ["https://script.googleapis.com/$discovery/rest?version=v1"],
+  });
+}
+
 // Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
 function App() {
+  const [filters2, setFilters] = useState({});
+  const [data, setData] = useState({});
 
   const [chartList, setChartList] = useState([]);
 
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
   const [filterList, setFilterList] = useState([]);
+
+  const onSuccess = tokenResponse => {
+    console.log(tokenResponse);
+    gapi.client.setToken({
+      access_token: tokenResponse.access_token
+    })
+    GetAttributes(setFilters);
+    GetData(JSON.stringify({
+      filters: "1",
+      splitColumn: "Ethnicity"
+    }), setData);
+  }
+
+  const login = useGoogleLogin({
+    onSuccess: onSuccess,
+    flow: "implicit",
+    scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
+  });
 
   const createMultipleSelect = () => {
     setFilterList([]);
@@ -63,7 +94,6 @@ function App() {
   const [tabList, setTabList] = useState([]);
   // let TESTCHART = chartList[0];
   const onAddBtnClickGraph = event => {
-    
     // get current filters selected
     var filters = filterList.map((filter) => {
       return filter.props.givenNames;
@@ -162,6 +192,9 @@ function App() {
   return (<div className="App">
     {/* <header className="App-header"> </header> */}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+      <button onClick={() => login()}>
+        Sign in with Google{' '}
+      </button>
     <div className="background" >
       <button className="mainButton" type="button">Admin</button>
       <h1>Center for Engineering Diversity Data Display Tool</h1>
