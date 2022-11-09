@@ -37,6 +37,7 @@ const scriptId = 'AKfycby9OQQ-Za7T-czL9gIIcnYWxCNSIsjQYkXfdwYWzXQQN39qe4FuOK5VhI
         } else {
           // The structure of the result will depend upon what the Apps
           console.log(result);
+          console.log("parsed results: ", JSON.parse(result.response.result));
           setObject(JSON.parse(result.response.result));
         }
       });

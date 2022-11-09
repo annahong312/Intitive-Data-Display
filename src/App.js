@@ -52,12 +52,18 @@ function App() {
 
   const [tabIsActive, setTabIsActive] = useState(0);
 
+  const onResponse = () => {
+
+    createMultipleSelect();
+  }
+
   const onSuccess = tokenResponse => {
     console.log(tokenResponse);
     gapi.client.setToken({
       access_token: tokenResponse.access_token
     })
-    GetAttributes(setFilters);
+    // GetAttributes(setFilters);
+    GetAttributes(createMultipleSelect);
     GetData(JSON.stringify({
       filters: "1",
       splitColumn: "Ethnicity"
@@ -66,13 +72,14 @@ function App() {
 
   const login = useGoogleLogin({
     onSuccess: onSuccess,
+    onResponse: onResponse,
     flow: "implicit",
     scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
   });
 
-  const createMultipleSelect = () => {
+  const createMultipleSelect = (filters) => {
     // setDropdownList([]);
-    // var newFilterDropdowns = [];
+    var newFilterDropdowns = [];
     // for (var i = 0; i < dropdownLabels.length; i++) {
     //   console.log("dropdownLabels[i]: " + dropdownLabels[i]);
     //   var curLabel = dropdownLabels[i];
@@ -80,22 +87,35 @@ function App() {
     //   // setFilterList(filterList => [filterList.concat(<MultipleSelect givenNames={namesGender} label={curLabel} />)]);
     // }
 
+    // console.log("filters2: " + filters2.length);
+
+
     // console.log(filters2, data);
-    var newFilterDropdowns = filters2.map((filter) => {
-      console.log(filter.options);
-      return <MultipleSelect givenNames={filter.options} label={filter.name} />
+    // var dropdownLabels = JSON.parse(filters2.data.attributes);
+    
+    var dropdownLabels = filters.data.attributes;
+
+    console.log("dropdownLabels: " + dropdownLabels);
+    
+    // var newFilterDropdowns = [];
+    // for (var i = 0; i < dropdownLabels.keys; i++) {
+    //   console.log("dropdownLabels[i]: " + dropdownLabels.get(i));
+    // }
+    var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
+      console.log(filter);
+      return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
       // <MultipleSelect givenNames={filter.options} label={filter.name} />
     });
 
-    // var newFilterDropdown = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    console.log(newFilterDropdowns);
+    // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
+    // console.log(newFilterDropdowns);
     setDropdownList(dropdownList.concat(newFilterDropdowns));
   };
 
   useEffect(() => { 
     // call apis to get filter options labels
     if (!dataCalled) {
-      createMultipleSelect();
+      // createMultipleSelect();
       dataCalled = true;
 
       // var filters = filterList.map((filter) => {
@@ -114,6 +134,7 @@ function App() {
   // let TESTCHART = chartList[0];
   const onAddBtnClickGraph = event => {
 
+    // console.log("filters2: " + JSON.stringify(filters2.data.attributes));
     // get current filters selected
     // var filters = dropdownList.map((filter) => {
     //   return filter.props.givenNames;
@@ -143,7 +164,7 @@ function App() {
     var tabName = document.getElementsByClassName("fname")[0].value;
     // console.log(tabName + " tabName");
     if (tabName === "") {
-      console.log("tabName is empty");
+      // console.log("tabName is empty");
       tabName = "Tab " + (maxIndex + 1);
     }
     
@@ -160,16 +181,7 @@ function App() {
 
   // make a function for clicking tab event
   const onTabClick = (index) => {
-    // get the index of the tab
-    // var name = event.target.innerHTML.substring(4);
-    // get the index of the tab from its name and search tablist for index
-    // var index = tabList.indexOf(event.target.id);
-    // console.log(index + " index of tab" + " tabList: " + event.target.name);
-    console.log(tabList + " tabList");
-    console.log(index + " index tabClick");
 
-    // set the index of the tab to be the current index
-    // curIndex = index - 1;
     curIndex = index;
     setCurrChart(chartList[curIndex]);
     console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
@@ -186,16 +198,19 @@ function App() {
     // var index = event.target.innerHTML.substring(4);
     // console.log(index + " is delete tab index");
     if (index === 0 && chartList.length === 1) {
+      console.log(index + " inside if for delete tab");
       // set chart as empty list
       setChartList([]);
       // set graph as empty list
       setGraphList([]);
       // set tab as empty list
       setTabList([]);
+      //set filters list
+      setFilterList([]);
       // set current chart as empty list
-      setCurrChart([]);
+      setCurrChart();
       // set current filters as empty list
-      setCurrFilters([]);
+      setCurrFilters();
       // set current index as -1
       curIndex = -1;
       // set max index as -1
@@ -217,8 +232,9 @@ function App() {
       var toRemoveFilter = filterList[index];
       setFilterList(filterList.filter(item => item !== toRemoveFilter));     
       
-      if (index === curIndex) {
-        curIndex++;
+      if (index === curIndex && index !== 0) {
+        // curIndex++;
+        curIndex = 0;
       } 
       maxIndex = chartList.length;
 
@@ -233,7 +249,7 @@ function App() {
 
   // function for formatting print the filter map out nicely
   const printFilterMap = (filterMap) => {
-    console.log("printing filter map", filterMap, curIndex);
+    // console.log("printing filter map", filterMap, curIndex);
     var htmlstr = "";
     if (filterMap === undefined) {
       return htmlstr;
