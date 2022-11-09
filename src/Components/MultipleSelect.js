@@ -19,8 +19,6 @@ const MenuProps = {
     },
   },
 };
-// var names;
-// var names = [];
 
 function getStyles(name, personName, theme) {
   return {
@@ -31,11 +29,14 @@ function getStyles(name, personName, theme) {
   };
 }
 
-var usedNameVals = [];
+var usedNameVals = new Map();
 
-function nameValUpdate(curNameVals) {
-    usedNameVals = curNameVals;
-    console.log("usedNameVals: " + usedNameVals);
+
+function nameValUpdate(curNameVals, label) {
+    usedNameVals = usedNameVals.set(label, curNameVals);
+    if (curNameVals.length < 1) {
+      usedNameVals = usedNameVals.delete(label);
+    }
 }
 
 export const getUpdatedNameVals = () => {
@@ -48,7 +49,7 @@ export default function MultipleSelect(givenNames) {
   var names = givenNames.givenNames;
   var label = givenNames.label;
 //   console.log(names + " names");
-//   console.log(label + " label");
+  // console.log(label + " label");
   const theme = useTheme();
   const [nameVals, setNameVals] = React.useState([]);
 
@@ -61,8 +62,7 @@ export default function MultipleSelect(givenNames) {
       typeof value === 'string' ? value.split(',') : value,
     );
     
-    console.log("nameVals: " + nameVals);
-    nameValUpdate(nameVals);
+    nameValUpdate(value, label);
   };
 
   const onMouseDown=(event) => {
@@ -74,18 +74,21 @@ export default function MultipleSelect(givenNames) {
     // setPersonName([...personName, value]);
     // console.log(value);
     setNameVals(nameVals.filter(item => item !== value));
-    nameValUpdate(nameVals);
+    var newNameVals = nameVals.filter(item => item !== value);
+    nameValUpdate(newNameVals, label);
 
   };
 
   //create a clear all function for the dropdown
   const clearAll = () => {
     setNameVals([]);
+    nameValUpdate([], label);
   }
 
   //create a select all function for the dropdown
   const selectAll = () => {
     setNameVals(names);
+    nameValUpdate(names, label);
   }
 
   return (

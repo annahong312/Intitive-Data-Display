@@ -26,20 +26,34 @@ const namesMajors = [
   'EE',
 ];
 
-// Why did we use 'extends component' in the first place? I changed it to functional component so my hooks work
+// const dropdownLabels = ["Gender", "Major"];
+
 function App() {
 
   const [chartList, setChartList] = useState([]);
 
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
+  const [dropdownList, setDropdownList] = useState([]);
   const [filterList, setFilterList] = useState([]);
+  const [currFilters, setCurrFilters] = useState([]);
+
+
+  const [tabIsActive, setTabIsActive] = useState(0);
 
   const createMultipleSelect = () => {
-    setFilterList([]);
+    // setDropdownList([]);
+    // var newFilterDropdowns = [];
+    // for (var i = 0; i < dropdownLabels.length; i++) {
+    //   console.log("dropdownLabels[i]: " + dropdownLabels[i]);
+    //   var curLabel = dropdownLabels[i];
+    //   newFilterDropdowns.push(<MultipleSelect givenNames={namesGender} label={curLabel}/>);
+    //   // setFilterList(filterList => [filterList.concat(<MultipleSelect givenNames={namesGender} label={curLabel} />)]);
+    // }
+
     var newFilterDropdown = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    console.log(newFilterDropdown);
-    setFilterList(filterList.concat(newFilterDropdown));
+    // console.log(newFilterDropdown);
+    setDropdownList(dropdownList.concat(newFilterDropdown));
   };
 
   useEffect(() => { 
@@ -65,53 +79,69 @@ function App() {
   const onAddBtnClickGraph = event => {
     
     // get current filters selected
-    var filters = filterList.map((filter) => {
-      return filter.props.givenNames;
-    });
-    console.log(filters + " filters");
+    // var filters = dropdownList.map((filter) => {
+    //   return filter.props.givenNames;
+    // });
+    // console.log(filters + " filters");
 
-    var firstFilter = filterList[0];
-    console.log(firstFilter);
-
+    // TODO: we will need to check for duplicate names 
     var vals = getUpdatedNameVals();
-    console.log(vals + " vals");
-
-    // var nameSelect = filterList[0].getUpdatedNameVals();
-    // console.log(nameSelect);
-
+    var filterMap = new Map(JSON.parse(
+      JSON.stringify(Array.from(vals))));
+    console.log(filterMap.get("Gender") + " vals at gender");
+    console.log(filterMap.get("Major") + " vals at major");
 
     curIndex++;
     maxIndex++;
 
-    // setChartList(chartList.concat(<DataTable />));
+    setFilterList(filterList.concat(filterMap));
+    console.log(filterList[maxIndex] + " filterList");
+    // console.log(filterList.length + " filterList length");
     var newChart = <GenerateChartMUI index={maxIndex }/>;
     var newGraph = <GenerateGraph index={maxIndex }/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
-    // console.log(newGraph + " new graph");
+    // print length of chartList
+    // console.log(chartList.length + " chartList length");
+    // get name of tab from fname input field
+    var tabName = document.getElementsByClassName("fname")[0].value;
+    // console.log(tabName + " tabName");
+    if (tabName === "") {
+      console.log("tabName is empty");
+      tabName = "Tab " + (maxIndex + 1);
+    }
     
-    setTabList(tabList.concat(<button className="tablinks" onclick="">Tab {maxIndex+1}</button>));
-    // console.log(chartList + " is chartList");
-    // console.log(maxIndex + " is maxIndex");
+    // setTabList(tabList.concat(<button className="tablinks" onclick="">{tabName}</button>));
+    setTabList(tabList.concat(tabName));
     setCurrChart(newChart);
-    // console.log(currChart);
+    setTabIsActive(curIndex);
+    setCurrFilters(filterMap);
+
+    // // Update the current tab name
+    // setCurrTabName("Tab " + (curIndex + 1));
+
   };
 
   // make a function for clicking tab event
-  const onTabClick = event => {
-    // createMultipleSelect();
+  const onTabClick = (index) => {
     // get the index of the tab
-    var index = event.target.innerHTML.substring(4);
-    // console.log(index + " is tab index");
-    // set the index of the tab to be the current index
-    curIndex = index - 1;
-    setCurrChart(chartList[curIndex]);
-   
-    // set the graph list to be the graph list at the index
-    // setGraphList(graphList[curIndex]);
-    // set the chart list to be the chart list at the index
-    // setChartList(chartList[curIndex]);
+    // var name = event.target.innerHTML.substring(4);
+    // get the index of the tab from its name and search tablist for index
+    // var index = tabList.indexOf(event.target.id);
+    // console.log(index + " index of tab" + " tabList: " + event.target.name);
+    console.log(tabList + " tabList");
+    console.log(index + " index tabClick");
 
+    // set the index of the tab to be the current index
+    // curIndex = index - 1;
+    curIndex = index;
+    setCurrChart(chartList[curIndex]);
+    console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
+    setCurrFilters(filterList[curIndex]);
+    setTabIsActive(curIndex);
+
+    // Update the current tab name
+    // setCurrTabName("Tab " + index);
   };
 
   // make function to delete a tab from the list
@@ -128,6 +158,8 @@ function App() {
       setTabList([]);
       // set current chart as empty list
       setCurrChart([]);
+      // set current filters as empty list
+      setCurrFilters([]);
       // set current index as -1
       curIndex = -1;
       // set max index as -1
@@ -144,18 +176,39 @@ function App() {
       // remove the graph from the graph list
       var toRemoveGraph = graphList[index];
       setGraphList(graphList.filter(item => item !== toRemoveGraph));
-      // graphList.splice(index, 1);
+      
+      // set filter list
+      var toRemoveFilter = filterList[index];
+      setFilterList(filterList.filter(item => item !== toRemoveFilter));     
       
       if (index === curIndex) {
         curIndex++;
       } 
-
-      // console.log(curIndex + " is curIndex");
       maxIndex = chartList.length;
 
       setCurrChart(chartList[curIndex]);
+      setCurrFilters(filterList[curIndex]);
     }
 
+    // Update the current tab name
+    // setCurrTabName("Tab " + curIndex);
+
+  };
+
+  // function for formatting print the filter map out nicely
+  const printFilterMap = (filterMap) => {
+    console.log("printing filter map", filterMap, curIndex);
+    var htmlstr = "";
+    if (filterMap === undefined) {
+      return htmlstr;
+    }
+    for (var [key, value] of filterMap) {
+      // generate html of key and value for each filter
+      htmlstr += "<p><b>" + key + ": </b>" + value + "</p><br>";
+      
+      // htmlstr += key + ": " + value + "\n\n";
+    }
+    return htmlstr;
   };
 
 
@@ -163,7 +216,7 @@ function App() {
     {/* <header className="App-header"> </header> */}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
     <div className="background" >
-      <button className="mainButton" type="button">Admin</button>
+      {/* <button className="mainButton" type="button">Admin</button> */}
       <h1>Center for Engineering Diversity Data Display Tool</h1>
 
       <div className="Checkbox-Background">
@@ -173,34 +226,33 @@ function App() {
         {/* Todo: Use a loop to walk through and generate each filter */}
         {/* <MultipleSelect  givenNames={namesGender} label="Gender" /> */}
         {/* <MultipleSelect  givenNames={namesMajors} label="Major" /> */}
-        {filterList}
+        {dropdownList}
       </div>
+      <label for="fname">Graph name:</label>
+      <input type="text" id="fname" class="fname"> 
+      </input>
       <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
     </div>
 
+
+    {/* Map out tabs: if the current tab is being mapped, change the highlight*/}
     <div>
       {tabList && tabList.map((tab, index) => (
-        <span  style={{paddingRight: 10 }}>
-          <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
-          <button className="btn" onClick={() => onDeleteTab(index)}><i class="fa fa-trash"></i></button>
+        <span>
+          <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
+            <span>{tab}</span> 
+            <button style={{marginTop: 1, float: "right"}} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
+          </button> 
         </span> ))}
-      
-      {/* // Original
-        // <div>
-        //   <button className="tablinks" onClick={onTabClick}>Tab {index+1}</button> 
-        //   <button className="btn" onClick={() => onDeleteTab(index)}><i class="fa fa-trash"></i></button>
-        // </div>) */}
-      
-      {/* {tabList && tabList.map((tab, index) => (
-        <i class="material-icons">delete</i>)
-      )} */}
     </div>
+
 
     <div style={{paddingBottom:'100px'}}>
       <h1>Filters</h1>
-      {/* print all filter options from MultipleSelectGender below */}
-      
-
+      {/* print filters with printFilterMap */}
+      {/* currFilters && printFilterMap(currFilters) */}
+      <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
+      {/* {currFilters} */}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
