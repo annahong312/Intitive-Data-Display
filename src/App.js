@@ -80,9 +80,16 @@ function App() {
     //   // setFilterList(filterList => [filterList.concat(<MultipleSelect givenNames={namesGender} label={curLabel} />)]);
     // }
 
-    var newFilterDropdown = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    // console.log(newFilterDropdown);
-    setDropdownList(dropdownList.concat(newFilterDropdown));
+    // console.log(filters2, data);
+    var newFilterDropdowns = filters2.map((filter) => {
+      console.log(filter.options);
+      return <MultipleSelect givenNames={filter.options} label={filter.name} />
+      // <MultipleSelect givenNames={filter.options} label={filter.name} />
+    });
+
+    // var newFilterDropdown = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
+    console.log(newFilterDropdowns);
+    setDropdownList(dropdownList.concat(newFilterDropdowns));
   };
 
   useEffect(() => { 
@@ -106,6 +113,7 @@ function App() {
   const [tabList, setTabList] = useState([]);
   // let TESTCHART = chartList[0];
   const onAddBtnClickGraph = event => {
+
     // get current filters selected
     // var filters = dropdownList.map((filter) => {
     //   return filter.props.givenNames;
