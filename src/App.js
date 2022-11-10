@@ -9,15 +9,13 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { GetAttributes, GetData } from './Scripts'
 import { gapi } from 'gapi-script';
 
-const sleep = ms => new Promise(
-  resolve => setTimeout(resolve, ms)
-);
-
 var curIndex = -1;
 var maxIndex = -1;
 var dataCalled = false;
 
-const namesGender = [
+var filterDict = {};
+
+/*const namesGender = [
   'Male',
   'Female',
   'Non-binary',
@@ -31,7 +29,7 @@ const namesMajors = [
   'CECS',
   'CE',
   'EE',
-];
+]; */
 
 gapi.load('client:auth2', initClient);
 function initClient() {
@@ -41,7 +39,7 @@ function initClient() {
 }
 
 function App() {
-  const [filters2, setFilters] = useState({});
+  // const [filters2, setFilters] = useState({});
   const [data, setData] = useState({});
 
   const [chartList, setChartList] = useState([]);
@@ -54,11 +52,6 @@ function App() {
 
 
   const [tabIsActive, setTabIsActive] = useState(0);
-
-  const onResponse = () => {
-
-    createMultipleSelect();
-  }
 
   const onSuccess = tokenResponse => {
     console.log(tokenResponse);
@@ -75,43 +68,29 @@ function App() {
 
   const login = useGoogleLogin({
     onSuccess: onSuccess,
-    onResponse: onResponse,
     flow: "implicit",
     scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
   });
 
   const createMultipleSelect = (filters) => {
-    // setDropdownList([]);
-    var newFilterDropdowns = [];
-    // for (var i = 0; i < dropdownLabels.length; i++) {
-    //   console.log("dropdownLabels[i]: " + dropdownLabels[i]);
-    //   var curLabel = dropdownLabels[i];
-    //   newFilterDropdowns.push(<MultipleSelect givenNames={namesGender} label={curLabel}/>);
-    //   // setFilterList(filterList => [filterList.concat(<MultipleSelect givenNames={namesGender} label={curLabel} />)]);
-    // }
 
-    // console.log("filters2: " + filters2.length);
-
-
-    // console.log(filters2, data);
-    // var dropdownLabels = JSON.parse(filters2.data.attributes);
-    
     var dropdownLabels = filters.data.attributes;
 
-    console.log("dropdownLabels: " + dropdownLabels);
+    // console.log("dropdownLabels: " + dropdownLabels);
     
-    // var newFilterDropdowns = [];
-    // for (var i = 0; i < dropdownLabels.keys; i++) {
-    //   console.log("dropdownLabels[i]: " + dropdownLabels.get(i));
-    // }
     var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
-      console.log(filter);
+      var keys = Object.keys(dropdownLabels[filter]);
+      var values = Object.values(dropdownLabels[filter]);
+      for (var i = 0; i < keys.length; i++) {
+        filterDict[keys[i]] = values[i];
+        // console.log(keys[i], values[i], " are keys and values");
+      }
       return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
       // <MultipleSelect givenNames={filter.options} label={filter.name} />
     });
 
     // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    // console.log(newFilterDropdowns);
+    console.log(filterDict, "is filterDict");
     setDropdownList(dropdownList.concat(newFilterDropdowns));
   };
 
@@ -120,43 +99,45 @@ function App() {
     if (!dataCalled) {
       // createMultipleSelect();
       dataCalled = true;
-
-      // var filters = filterList.map((filter) => {
-      //   return filter.props.givenNames;
-      // });
-      // console.log(filters);
-
-      // var firstFilter = filterList[0];
-      // console.log(firstFilter);
   
     }
   });
 
+  // function to return data from API call
+  const getAPIData = (filterMap) => {
+    var valueArray = [];
+      for (let [key, value] of filterMap) {
+        for (var val in value) {
+          valueArray.push(val);
+        }
+        
+      }
+      console.log(valueArray);
+      
+      GetData(JSON.stringify({
+        filters: valueArray,
+        splitColumn: "Ethnicity"
+      }), setData);
+  }
+
   // build tab list
   const [tabList, setTabList] = useState([]);
-  // let TESTCHART = chartList[0];
-  const onAddBtnClickGraph = event => {
-
-    // console.log("filters2: " + JSON.stringify(filters2.data.attributes));
-    // get current filters selected
-    // var filters = dropdownList.map((filter) => {
-    //   return filter.props.givenNames;
-    // });
-    // console.log(filters + " filters");
-
+  const onAddBtnClickGraph = () => {
    
     var vals = getUpdatedNameVals();
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(vals))));
-    console.log(filterMap.get("Gender") + " vals at gender");
-    console.log(filterMap.get("Major") + " vals at major");
+
+    getAPIData(filterMap);
+
+    console.log(data);
 
     curIndex++;
     maxIndex++;
 
     setFilterList(filterList.concat(filterMap));
     console.log(filterList[maxIndex] + " filterList");
-    // console.log(filterList.length + " filterList length");
+
     var newChart = <GenerateChartMUI index={maxIndex }/>;
     var newGraph = <GenerateGraph index={maxIndex }/>;
     setChartList(chartList.concat(newChart));
@@ -181,13 +162,6 @@ function App() {
      else{
       console.log("Tab name already exists!");
      }
-    
-    
-    // setTabList(tabList.concat(<button className="tablinks" onclick="">{tabName}</button>));
-   
-
-    // // Update the current tab name
-    // setCurrTabName("Tab " + (curIndex + 1));
 
   };
 
@@ -199,16 +173,11 @@ function App() {
     console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
     setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
-
-    // Update the current tab name
-    // setCurrTabName("Tab " + index);
   };
 
   // make function to delete a tab from the list
   const onDeleteTab = (index) => {
     // get the index of the tab
-    // var index = event.target.innerHTML.substring(4);
-    // console.log(index + " is delete tab index");
     if (index === 0 && chartList.length === 1) {
       console.log(index + " inside if for delete tab");
       // useEffect(() => {
@@ -227,7 +196,6 @@ function App() {
         setCurrFilters([]);
         // set current index as -1
       // });
-      // sleep(1000);
 
       console.log(currChart + " is currChart in delete");
       console.log(currFilters + " is currFilters in delete");   
@@ -263,9 +231,6 @@ function App() {
       setCurrFilters(filterList[curIndex]);
     }
 
-    // Update the current tab name
-    // setCurrTabName("Tab " + curIndex);
-
   };
 
   // function for formatting print the filter map out nicely
@@ -278,8 +243,6 @@ function App() {
     for (var [key, value] of filterMap) {
       // generate html of key and value for each filter
       htmlstr += "<p><b>" + key + ": </b>" + value + "</p><br>";
-      
-      // htmlstr += key + ": " + value + "\n\n";
     }
     return htmlstr;
   };
@@ -302,6 +265,7 @@ function App() {
       <div className="Button-Background" >
         <label for="fname">Graph name:  </label>
         <input type="text" id="fname" class="fname"></input>
+        {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
         <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
       </div>
     </div>
@@ -321,10 +285,7 @@ function App() {
 
     <div style={{paddingBottom:'100px'}}>
       <h1>Filters</h1>
-      {/* print filters with printFilterMap */}
-      {/* currFilters && printFilterMap(currFilters) */}
       <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
-      {/* {currFilters} */}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
