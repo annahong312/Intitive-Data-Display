@@ -9,7 +9,10 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { GetAttributes, GetData } from './Scripts'
 import { gapi } from 'gapi-script';
 
-  
+const sleep = ms => new Promise(
+  resolve => setTimeout(resolve, ms)
+);
+
 var curIndex = -1;
 var maxIndex = -1;
 var dataCalled = false;
@@ -141,7 +144,7 @@ function App() {
     // });
     // console.log(filters + " filters");
 
-    // TODO: we will need to check for duplicate names 
+   
     var vals = getUpdatedNameVals();
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(vals))));
@@ -158,21 +161,30 @@ function App() {
     var newGraph = <GenerateGraph index={maxIndex }/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
-    // print length of chartList
-    // console.log(chartList.length + " chartList length");
+
     // get name of tab from fname input field
     var tabName = document.getElementsByClassName("fname")[0].value;
     // console.log(tabName + " tabName");
-    if (tabName === "") {
-      // console.log("tabName is empty");
-      tabName = "Tab " + (maxIndex + 1);
-    }
+
+     // TODO: we will need to check for duplicate names 
+     if (! tabList.includes(tabName)){
+      if (tabName === "") {
+        // console.log("tabName is empty");
+        tabName = "Tab " + (maxIndex + 1);
+
+      }
+      setTabList(tabList.concat(tabName));
+      setCurrChart(newChart);
+      setTabIsActive(curIndex);
+      setCurrFilters(filterMap);
+     }
+     else{
+      console.log("Tab name already exists!");
+     }
+    
     
     // setTabList(tabList.concat(<button className="tablinks" onclick="">{tabName}</button>));
-    setTabList(tabList.concat(tabName));
-    setCurrChart(newChart);
-    setTabIsActive(curIndex);
-    setCurrFilters(filterMap);
+   
 
     // // Update the current tab name
     // setCurrTabName("Tab " + (curIndex + 1));
@@ -199,19 +211,26 @@ function App() {
     // console.log(index + " is delete tab index");
     if (index === 0 && chartList.length === 1) {
       console.log(index + " inside if for delete tab");
-      // set chart as empty list
-      setChartList([]);
-      // set graph as empty list
-      setGraphList([]);
-      // set tab as empty list
-      setTabList([]);
-      //set filters list
-      setFilterList([]);
-      // set current chart as empty list
-      setCurrChart();
-      // set current filters as empty list
-      setCurrFilters();
-      // set current index as -1
+      // useEffect(() => {
+        // set chart as empty list
+        setChartList([]);
+        // set graph as empty list
+        setGraphList([]);
+        // set tab as empty list
+        setTabList([]);
+        //set filters list
+        setFilterList([]);
+        // set current chart as empty list
+        
+        setCurrChart([]);
+        // set current filters as empty list
+        setCurrFilters([]);
+        // set current index as -1
+      // });
+      // sleep(1000);
+
+      console.log(currChart + " is currChart in delete");
+      console.log(currFilters + " is currFilters in delete");   
       curIndex = -1;
       // set max index as -1
       maxIndex = -1;
@@ -232,10 +251,12 @@ function App() {
       var toRemoveFilter = filterList[index];
       setFilterList(filterList.filter(item => item !== toRemoveFilter));     
       
-      if (index === curIndex && index !== 0) {
+      if (index === curIndex && index === 0) {
         // curIndex++;
         curIndex = 0;
-      } 
+      } else {
+        curIndex--;
+      }
       maxIndex = chartList.length;
 
       setCurrChart(chartList[curIndex]);
@@ -249,7 +270,7 @@ function App() {
 
   // function for formatting print the filter map out nicely
   const printFilterMap = (filterMap) => {
-    // console.log("printing filter map", filterMap, curIndex);
+    console.log("printing filter map", filterMap, curIndex);
     var htmlstr = "";
     if (filterMap === undefined) {
       return htmlstr;
@@ -276,17 +297,13 @@ function App() {
 
       <div className="Checkbox-Background">
         <p>Filter Options</p>
-        {/* <MultipleSelectGender /> */}
-        {/* <MultipleSelectMajor /> */}
-        {/* Todo: Use a loop to walk through and generate each filter */}
-        {/* <MultipleSelect  givenNames={namesGender} label="Gender" /> */}
-        {/* <MultipleSelect  givenNames={namesMajors} label="Major" /> */}
         {dropdownList}
       </div>
-      <label for="fname">Graph name:</label>
-      <input type="text" id="fname" class="fname"> 
-      </input>
-      <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
+      <div className="Button-Background" >
+        <label for="fname">Graph name:  </label>
+        <input type="text" id="fname" class="fname"></input>
+        <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
+      </div>
     </div>
 
 
