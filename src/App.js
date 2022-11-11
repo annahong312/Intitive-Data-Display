@@ -12,6 +12,7 @@ import { gapi } from 'gapi-script';
 var curIndex = -1;
 var maxIndex = -1;
 var dataCalled = false;
+var rate = "Enrollment Rate";
 
 var filterDict = {};
 
@@ -38,8 +39,14 @@ function initClient() {
   });
 }
 
+var headers = [];
+
+function createChartData(name, headers) {
+
+}
+
 function App() {
-  // const [filters2, setFilters] = useState({});
+  const [attributes, setAttributes] = useState({});
   const [data, setData] = useState({});
 
   const [chartList, setChartList] = useState([]);
@@ -74,6 +81,9 @@ function App() {
 
   const createMultipleSelect = (filters) => {
 
+    // set attributes
+    setAttributes(filters.data);
+
     var dropdownLabels = filters.data.attributes;
 
     // console.log("dropdownLabels: " + dropdownLabels);
@@ -104,7 +114,13 @@ function App() {
   });
 
   // function to return data from API call
-  const getAPIData = (filterMap) => {
+  const getAPIData = () => {
+    var vals = getUpdatedNameVals();
+    var filterMap = new Map(JSON.parse(
+      JSON.stringify(Array.from(vals))));
+
+    setFilterList(filterList.concat(filterMap));
+    setCurrFilters(filterMap);
     var valueArray = [];
       for (let [key, value] of filterMap) {
         for (var val in value) {
@@ -117,29 +133,55 @@ function App() {
       GetData(JSON.stringify({
         filters: valueArray,
         splitColumn: "Ethnicity"
-      }), setData);
+      }), onAddBtnClickGraph);
   }
 
   // build tab list
   const [tabList, setTabList] = useState([]);
-  const onAddBtnClickGraph = () => {
+  const onAddBtnClickGraph = (data) => {
    
-    var vals = getUpdatedNameVals();
-    var filterMap = new Map(JSON.parse(
-      JSON.stringify(Array.from(vals))));
+    // var vals = getUpdatedNameVals();
+    // var filterMap = new Map(JSON.parse(
+    //   JSON.stringify(Array.from(vals))));
 
-    getAPIData(filterMap);
+    // getAPIData(filterMap);
 
-    console.log(data);
+    // process data into a list
+    var dataRows = []
+    for(const [key,value] of Object.entries(data.data)) {
+      // change key into respective filter value
+      console.log(key, "is key");
+      var filterName = "";
+      if(key === "total") {
+        filterName = "Total";
+      } else {
+        filterName = Object.keys(filterDict).find(filterKey => filterDict[filterKey] === parseInt(key));
+      }
+      console.log(filterName, "is keyVal");
+      var dataRates = value.rates[rate];
+
+      var dataRow = {
+        name: filterName
+
+      }
+      for(let i = 0; i < dataRates.length; i++) {
+        dataRow[attributes.rates[rate][i]] = dataRates[i];
+      }
+      dataRows.push(dataRow);
+
+    }
+    console.log(dataRows, "is dataRows");
+
+    // console.log(data.data + " is data in onAddBtnClickGraph");
 
     curIndex++;
     maxIndex++;
 
-    setFilterList(filterList.concat(filterMap));
-    console.log(filterList[maxIndex] + " filterList");
+    // setFilterList(filterList.concat(filterMap));
+    // console.log(filterList[maxIndex] + " filterList");
 
-    var newChart = <GenerateChartMUI index={maxIndex }/>;
-    var newGraph = <GenerateGraph index={maxIndex }/>;
+    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={rate}/>;
+    var newGraph = <GenerateGraph index={maxIndex} data={data.data}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
 
@@ -157,7 +199,7 @@ function App() {
       setTabList(tabList.concat(tabName));
       setCurrChart(newChart);
       setTabIsActive(curIndex);
-      setCurrFilters(filterMap);
+      // setCurrFilters(filterMap);
      }
      else{
       console.log("Tab name already exists!");
@@ -235,7 +277,7 @@ function App() {
 
   // function for formatting print the filter map out nicely
   const printFilterMap = (filterMap) => {
-    console.log("printing filter map", filterMap, curIndex);
+    // console.log("printing filter map", filterMap, curIndex);
     var htmlstr = "";
     if (filterMap === undefined) {
       return htmlstr;
@@ -266,7 +308,7 @@ function App() {
         <label for="fname">Graph name:  </label>
         <input type="text" id="fname" class="fname"></input>
         {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
-        <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
+        <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
       </div>
     </div>
 

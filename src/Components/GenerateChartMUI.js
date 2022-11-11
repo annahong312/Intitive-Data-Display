@@ -238,7 +238,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable(index) {
+export default function EnhancedTable(props) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -247,10 +247,13 @@ export default function EnhancedTable(index) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   // define the data values for rows
+  console.log(props.data + " index.data in generateChart");
   // const rows = (index % 2 == 0) ? rows1 : rows2; //call apis to generate a "rows" array
-  var curIndex = parseInt(index.index) % 2;
+  var curIndex = parseInt(props.index) % 2;
+
   // console.log("curIndex: " + curIndex);
-  const rows = (curIndex > 0) ? rows1 : rows2;
+  // const rows = (curIndex > 0) ? rows1 : rows2;
+  const rows = props.data;
   
   // console.log("index before: " + parseInt(index.index));
   // console.log(index);
@@ -304,6 +307,14 @@ export default function EnhancedTable(index) {
   const handleChangeDense = (event) => {
     setDense(event.target.checked);
   };
+
+  const generateCols = (row) => {
+    var htmlStr = "";
+    for (const [key, value] of Object.entries(row)) {
+      htmlStr += "<TableCell align=\"right\">" + value + "</TableCell>";
+    }
+    return htmlStr;
+  }
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -366,6 +377,8 @@ export default function EnhancedTable(index) {
                         {row.name}
                       </TableCell>
                       <TableCell align="right">{row.calories}</TableCell>
+                      {/* <div dangerouslySetInnerHTML={{ __html: generateCols({row})}} /> */}
+                      
                       <TableCell align="right">{row.fat}</TableCell>
                       <TableCell align="right">{row.carbs}</TableCell>
                       <TableCell align="right">{row.protein}</TableCell>
