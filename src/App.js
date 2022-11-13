@@ -180,7 +180,7 @@ function App() {
     // setFilterList(filterList.concat(filterMap));
     // console.log(filterList[maxIndex] + " filterList");
 
-    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={rate}/>;
+    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={rate} attributes={attributes.rates[rate]}/>;
     var newGraph = <GenerateGraph index={maxIndex} data={data.data}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));

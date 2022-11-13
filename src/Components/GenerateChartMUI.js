@@ -94,6 +94,33 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+function createHeadCells(labels) {
+  // prepend name column
+  const headCells = [
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: true,
+      label: 'Filter',
+    }];
+    // add rest of the labels to headCells
+    labels.forEach((label) => {
+      headCells.push({
+        id: label,
+        numeric: true,
+        disablePadding: false,
+        label,
+      });
+    });
+    return headCells;
+  // return labels.map((label) => ({
+  //   id: label,
+  //   numeric: false,
+  //   disablePadding: true,
+  //   label: label,
+  // }));
+}
+
 const headCells = [
   {
     id: 'name',
@@ -128,8 +155,9 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, attributes } =
     props;
+    console.log(attributes);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -148,7 +176,7 @@ function EnhancedTableHead(props) {
             }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {createHeadCells(attributes).map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
@@ -181,6 +209,7 @@ EnhancedTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
+  attributes: PropTypes.array.isRequired,
 };
 
 const EnhancedTableToolbar = (props) => {
@@ -254,6 +283,8 @@ export default function EnhancedTable(props) {
   // console.log("curIndex: " + curIndex);
   // const rows = (curIndex > 0) ? rows1 : rows2;
   const rows = props.data;
+  const attributes = props.attributes;
+  console.log(rows + " is rows in 1st call");
   
   // console.log("index before: " + parseInt(index.index));
   // console.log(index);
@@ -308,10 +339,12 @@ export default function EnhancedTable(props) {
     setDense(event.target.checked);
   };
 
-  const generateCols = (row) => {
+  const generateCols = (row, attributes) => {
     var htmlStr = "";
-    for (const [key, value] of Object.entries(row)) {
-      htmlStr += "<TableCell align=\"right\">" + value + "</TableCell>";
+    // console.log(attributes + " is attributes in generateCols");
+    for (var i = 0; i < attributes.length; i++) {
+      console.log(attributes[i] + " is attribute" + row.attributes[i] + " is row[attribute]");
+      htmlStr += "<TableCell align=\"right\">" + row.attributes[i] + "</TableCell>";
     }
     return htmlStr;
   }
@@ -339,6 +372,7 @@ export default function EnhancedTable(props) {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              attributes={attributes}
             />
             <TableBody>
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
@@ -376,12 +410,12 @@ export default function EnhancedTable(props) {
                       >
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      {/* <div dangerouslySetInnerHTML={{ __html: generateCols({row})}} /> */}
+                      <TableCell align="right">{row.Enr1Yr}</TableCell>
+                      {/* <div dangerouslySetInnerHTML={{ __html: generateCols({row}, {attributes})}} /> */}
                       
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right">{row.Enr2Yr}</TableCell>
+                      <TableCell align="right">{row.Enr3Yr}</TableCell>
+                      {/* <TableCell align="right">{row.protein}</TableCell> */}
                     </TableRow>
                   );
                 })}
