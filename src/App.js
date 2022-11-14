@@ -16,22 +16,6 @@ var rate = "Enrollment Rate";
 
 var filterDict = {};
 
-/*const namesGender = [
-  'Male',
-  'Female',
-  'Non-binary',
-];
-
-const namesMajors = [
-  'CSCI',
-  'BME',
-  'CSBA',
-  'ME',
-  'CECS',
-  'CE',
-  'EE',
-]; */
-
 gapi.load('client:auth2', initClient);
 function initClient() {
   gapi.client.init( {
@@ -39,15 +23,8 @@ function initClient() {
   });
 }
 
-var headers = [];
-
-function createChartData(name, headers) {
-
-}
-
 function App() {
   const [attributes, setAttributes] = useState({});
-  const [data, setData] = useState({});
 
   const [chartList, setChartList] = useState([]);
 
@@ -157,8 +134,8 @@ function App() {
       var dataRates = value.rates[rate];
 
       var dataRow = {
-        name: filterName
-
+        name: filterName,
+        total: value.count
       }
       for(let i = 0; i < dataRates.length; i++) {
         dataRow[attributes.rates[rate][i]] = dataRates[i];

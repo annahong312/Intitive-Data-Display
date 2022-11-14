@@ -30,7 +30,7 @@ const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
             // executing.
             //appendPre('Script error stacktrace:');
             for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
-              const trace = error.scriptStackTraceElements[i];
+              // const trace = error.scriptStackTraceElements[i];
               //appendPre('\t' + trace.function + ':' + trace.lineNumber);
             }
           }
@@ -42,7 +42,7 @@ const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
         }
       });
     } catch (err) {
-        console.log(err);
+      console.log(err);
       return;
     }
   }
@@ -56,8 +56,6 @@ const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
   //   'resource' describes the run request body (with the function name
   //              to execute)
   try {
-    console.log("Calling with parameters");
-    console.log(parameters);
     gapi.client.script.scripts.run({
       'scriptId': scriptId,
       'resource': {
@@ -78,7 +76,7 @@ const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
           // executing.
           //appendPre('Script error stacktrace:');
           for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
-            const trace = error.scriptStackTraceElements[i];
+            // const trace = error.scriptStackTraceElements[i];
             //appendPre('\t' + trace.function + ':' + trace.lineNumber);
           }
         }

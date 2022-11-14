@@ -70,6 +70,12 @@ function createHeadCells(labels) {
         label,
       });
     });
+    headCells.push({
+      id: 'total',
+      numeric: true,
+      disablePadding: false,
+      label: 'Total',
+    });
     return headCells;
   // return labels.map((label) => ({
   //   id: label,
@@ -319,6 +325,7 @@ export default function EnhancedTable(props) {
                       {attributes.map((i) => {
                         return(<TableCell align="right">{row[i]}</TableCell>);
                       })}
+                      <TableCell align="right">{row.total}</TableCell>
                     </TableRow>
                   );
                 })}
