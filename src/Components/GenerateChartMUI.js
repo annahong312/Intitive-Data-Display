@@ -88,7 +88,7 @@ function createHeadCells(labels) {
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, attributes } =
     props;
-    console.log(attributes);
+    // console.log(attributes);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -207,12 +207,10 @@ export default function EnhancedTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   // define the data values for rows
-  console.log("index.data in generateChart");
-  console.log(props.data);
+  // console.log(props.data);
 
   const rows = props.data;
   const attributes = props.attributes;
-  console.log(rows + " is rows in 1st call");
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

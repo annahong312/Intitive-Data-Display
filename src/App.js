@@ -25,6 +25,7 @@ function initClient() {
 
 function App() {
   const [attributes, setAttributes] = useState({});
+  const [rateDropdown, setRateDropdown] = useState([]);
 
   const [chartList, setChartList] = useState([]);
 
@@ -60,6 +61,7 @@ function App() {
     var dropdownLabels = filters.data.attributes;
 
     // console.log("dropdownLabels: " + dropdownLabels);
+    // console.log(attributes + " is attributes in createMultipleSelect");
     
     var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
       var keys = Object.keys(dropdownLabels[filter]);
@@ -73,18 +75,13 @@ function App() {
     });
 
     // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    console.log(filterDict, "is filterDict");
     setDropdownList(dropdownList.concat(newFilterDropdowns));
+    setRateDropdown(<select name="selectAllFilters" id="selectAllFilters">
+    {Object.keys(attributes.attributes).map((i) => {
+                  return(<option value={i}>{i}</option>);
+            })} </select>)
   };
 
-  useEffect(() => { 
-    // call apis to get filter options labels
-    if (!dataCalled) {
-      // createMultipleSelect();
-      dataCalled = true;
-  
-    }
-  });
 
   // function to return data from API call
   const getAPIData = () => {
@@ -97,15 +94,20 @@ function App() {
     var valueArray = [];
       for (let [key, value] of filterMap) {
         for (var val in value) {
-          valueArray.push(val);
+          // console.log(filterDict[value[val]], "is value[val]");
+          valueArray.push(filterDict[value[val]]);
         }
-        
+
       }
       console.log(valueArray);
+
+      var e = document.getElementById("selectAllFilters");
+      var splitColValue = e.value;
+      console.log(splitColValue, "is splitColValue");
       
       GetData(JSON.stringify({
         filters: valueArray,
-        splitColumn: "Ethnicity"
+        splitColumn: splitColValue,
       }), onAddBtnClickGraph);
   }
 
@@ -116,14 +118,12 @@ function App() {
     var dataRows = []
     for(const [key,value] of Object.entries(data.data)) {
       // change key into respective filter value
-      console.log(key, "is key");
       var filterName = "";
       if(key === "total") {
         filterName = "Total";
       } else {
         filterName = Object.keys(filterDict).find(filterKey => filterDict[filterKey] === parseInt(key));
       }
-      console.log(filterName, "is keyVal");
       var dataRates = value.rates[rate];
 
       var dataRow = {
@@ -136,7 +136,6 @@ function App() {
       dataRows.push(dataRow);
 
     }
-    console.log(dataRows, "is dataRows");
 
     // console.log(data.data + " is data in onAddBtnClickGraph");
 
@@ -187,7 +186,6 @@ function App() {
   const onDeleteTab = (index) => {
     // get the index of the tab
     if (index === 0 && chartList.length === 1) {
-      console.log(index + " inside if for delete tab");
       // useEffect(() => {
         // set chart as empty list
         setChartList([]);
@@ -205,8 +203,6 @@ function App() {
         // set current index as -1
       // });
 
-      console.log(currChart + " is currChart in delete");
-      console.log(currFilters + " is currFilters in delete");   
       curIndex = -1;
       // set max index as -1
       maxIndex = -1;
@@ -268,12 +264,21 @@ function App() {
 
       <div className="Checkbox-Background">
         <p>Filter Options</p>
+        <label for="selectAllFilters">Choose a filter to sort by: </label>
+        {/* <select name="selectAllFilters" id="selectAllFilters">
+          {Object.keys(attributes.attributes).map((i) => {
+                        return(<option value="i">{i}</option>);
+                  })}
+        </select> */}
+        {rateDropdown}
         {dropdownList}
       </div>
       <div className="Button-Background" >
         <label for="fname">Graph name:  </label>
         <input type="text" id="fname" class="fname"></input>
         {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
+        <label for="cars">Choose a car:</label>
+
         <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
       </div>
     </div>

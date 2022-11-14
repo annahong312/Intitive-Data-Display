@@ -22,6 +22,26 @@ ChartJS.register(
   Legend
 );
 
+function GetData(props) {
+  let returnData = [];
+  for (const [key, value] of Object.entries(props.data)) {
+    returnData.push({
+      label: key,
+      data: value.rates[props.rate],
+      backgroundColor: [
+        "rgba(75,192,192,1)",
+        "#ecf0f1",
+        "#50AF95",
+        "#f3ba2f",
+        "#2a71d0",
+      ],
+      borderColor: "black",
+      borderWidth: 2,
+    })
+  }
+  return returnData;
+}
+
 export default function GenerateGraph(props) {
 
   return (
@@ -31,21 +51,7 @@ export default function GenerateGraph(props) {
         // data={data}
         data={{
           labels: props.attributes,
-          datasets: [
-            {
-              label: props.rate,
-              data: props.data["total"].rates[props.rate],
-              backgroundColor: [
-                "rgba(75,192,192,1)",
-                "#ecf0f1",
-                "#50AF95",
-                "#f3ba2f",
-                "#2a71d0",
-              ],
-              borderColor: "black",
-              borderWidth: 2,
-            },
-          ],
+          datasets: GetData(props),
           options: {
             plugins: {
                 title: {
