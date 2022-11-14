@@ -149,7 +149,7 @@ function App() {
     var splitColValue = e.value;
 
     var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributes.rates[rate]}/>;
-    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]}/>;
+    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]} filterDict={filterDict}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
 

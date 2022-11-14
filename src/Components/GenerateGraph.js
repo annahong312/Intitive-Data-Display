@@ -25,8 +25,14 @@ ChartJS.register(
 function GetData(props) {
   let returnData = [];
   for (const [key, value] of Object.entries(props.data)) {
+    var filterName;
+    if (key === "total") {
+      filterName = "Total";
+    } else {
+      filterName = Object.keys(props.filterDict).find(filterKey => props.filterDict[filterKey] === parseInt(key));
+    }
     returnData.push({
-      label: key,
+      label: filterName,
       data: value.rates[props.rate],
       backgroundColor: [
         "rgba(75,192,192,1)",
