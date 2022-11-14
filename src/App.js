@@ -277,8 +277,6 @@ function App() {
         <label for="fname">Graph name:  </label>
         <input type="text" id="fname" class="fname"></input>
         {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
-        <label for="cars">Choose a car:</label>
-
         <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
       </div>
     </div>
