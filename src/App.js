@@ -77,7 +77,7 @@ function App() {
     // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
     setDropdownList(dropdownList.concat(newFilterDropdowns));
     setRateDropdown(<select name="selectAllFilters" id="selectAllFilters">
-    {Object.keys(attributes.attributes).map((i) => {
+    {Object.keys(filters.data.attributes).map((i) => {
                   return(<option value={i}>{i}</option>);
             })} </select>)
   };
@@ -145,7 +145,10 @@ function App() {
     // setFilterList(filterList.concat(filterMap));
     // console.log(filterList[maxIndex] + " filterList");
 
-    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={rate} attributes={attributes.rates[rate]}/>;
+    var e = document.getElementById("selectAllFilters");
+    var splitColValue = e.value;
+
+    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributes.rates[rate]}/>;
     var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));

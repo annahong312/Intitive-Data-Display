@@ -22,6 +22,8 @@ import { visuallyHidden } from '@mui/utils';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 
+var curRate = "";
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -173,7 +175,7 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          {curRate}
         </Typography>
       )}
 
@@ -211,6 +213,7 @@ export default function EnhancedTable(props) {
 
   const rows = props.data;
   const attributes = props.attributes;
+  curRate = props.rate;
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
