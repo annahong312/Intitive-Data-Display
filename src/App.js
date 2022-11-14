@@ -112,13 +112,6 @@ function App() {
   // build tab list
   const [tabList, setTabList] = useState([]);
   const onAddBtnClickGraph = (data) => {
-   
-    // var vals = getUpdatedNameVals();
-    // var filterMap = new Map(JSON.parse(
-    //   JSON.stringify(Array.from(vals))));
-
-    // getAPIData(filterMap);
-
     // process data into a list
     var dataRows = []
     for(const [key,value] of Object.entries(data.data)) {
@@ -154,7 +147,7 @@ function App() {
     // console.log(filterList[maxIndex] + " filterList");
 
     var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={rate} attributes={attributes.rates[rate]}/>;
-    var newGraph = <GenerateGraph index={maxIndex} data={data.data}/>;
+    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
 

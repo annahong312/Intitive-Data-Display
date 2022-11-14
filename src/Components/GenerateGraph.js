@@ -11,8 +11,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { UserData } from '../Data'
-import { UserData2 } from '../Data2'
 
 ChartJS.register(
   CategoryScale,
@@ -24,11 +22,7 @@ ChartJS.register(
   Legend
 );
 
-export default function GenerateGraph(index) {
-
-  // Data For Graph
-  console.log(index.data + " is data in GenerateGraph");
-  const dataFromFile = parseInt(index.index) % 2 > 0 ? UserData2 : UserData;
+export default function GenerateGraph(props) {
 
   return (
     <div>
@@ -36,11 +30,11 @@ export default function GenerateGraph(index) {
       <Line
         // data={data}
         data={{
-          labels: dataFromFile.map((data) => data.year),
+          labels: props.attributes,
           datasets: [
             {
-              label: "Users Gained",
-              data: dataFromFile.map((data) => data.userGain),
+              label: props.rate,
+              data: props.data["total"].rates[props.rate],
               backgroundColor: [
                 "rgba(75,192,192,1)",
                 "#ecf0f1",
