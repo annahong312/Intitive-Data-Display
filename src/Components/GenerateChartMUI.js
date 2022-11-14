@@ -22,48 +22,6 @@ import { visuallyHidden } from '@mui/utils';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 
-function createData(name, calories, fat, carbs, protein) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-  };
-}
-
-const rows1 = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
-
-const rows2 = [
-  createData('Cupcake', 500, 3.7, 67, 4.3),
-  createData('Donut', 325, 25.0, 51, 4.9),
-  createData('Eclair', 178, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 200, 6.0, 24, 4.0),
-  createData('Gingerbread', 90, 16.0, 49, 3.9),
-  createData('Honeycomb', 390, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 597, 9.0, 37, 4.3),
-  createData('Jelly Bean', 230, 0.0, 94, 0.0),
-  createData('KitKat', 175, 26.0, 65, 7.0),
-  createData('Lollipop', 86, 0.2, 98, 0.0),
-  createData('Marshmallow', 289, 0, 81, 2.0),
-  createData('Nougat', 488, 19.0, 9, 37.0),
-  createData('Oreo', 429, 18.0, 63, 4.0),
-];
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -120,39 +78,6 @@ function createHeadCells(labels) {
   //   label: label,
   // }));
 }
-
-const headCells = [
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: true,
-    label: 'Dessert (100g serving)',
-  },
-  {
-    id: 'calories',
-    numeric: true,
-    disablePadding: false,
-    label: 'Calories',
-  },
-  {
-    id: 'fat',
-    numeric: true,
-    disablePadding: false,
-    label: 'Fat (g)',
-  },
-  {
-    id: 'carbs',
-    numeric: true,
-    disablePadding: false,
-    label: 'Carbs (g)',
-  },
-  {
-    id: 'protein',
-    numeric: true,
-    disablePadding: false,
-    label: 'Protein (g)',
-  },
-];
 
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, attributes } =
@@ -276,20 +201,12 @@ export default function EnhancedTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   // define the data values for rows
-  console.log(props.data + " index.data in generateChart");
-  // const rows = (index % 2 == 0) ? rows1 : rows2; //call apis to generate a "rows" array
-  var curIndex = parseInt(props.index) % 2;
+  console.log("index.data in generateChart");
+  console.log(props.data);
 
-  // console.log("curIndex: " + curIndex);
-  // const rows = (curIndex > 0) ? rows1 : rows2;
   const rows = props.data;
   const attributes = props.attributes;
   console.log(rows + " is rows in 1st call");
-  
-  // console.log("index before: " + parseInt(index.index));
-  // console.log(index);
-  // console.log(rows);
-
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -339,16 +256,6 @@ export default function EnhancedTable(props) {
     setDense(event.target.checked);
   };
 
-  const generateCols = (row, attributes) => {
-    var htmlStr = "";
-    // console.log(attributes + " is attributes in generateCols");
-    for (var i = 0; i < attributes.length; i++) {
-      console.log(attributes[i] + " is attribute" + row.attributes[i] + " is row[attribute]");
-      htmlStr += "<TableCell align=\"right\">" + row.attributes[i] + "</TableCell>";
-    }
-    return htmlStr;
-  }
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -382,7 +289,6 @@ export default function EnhancedTable(props) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
                       hover
@@ -410,12 +316,9 @@ export default function EnhancedTable(props) {
                       >
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.Enr1Yr}</TableCell>
-                      {/* <div dangerouslySetInnerHTML={{ __html: generateCols({row}, {attributes})}} /> */}
-                      
-                      <TableCell align="right">{row.Enr2Yr}</TableCell>
-                      <TableCell align="right">{row.Enr3Yr}</TableCell>
-                      {/* <TableCell align="right">{row.protein}</TableCell> */}
+                      {attributes.map((i) => {
+                        return(<TableCell align="right">{row[i]}</TableCell>);
+                      })}
                     </TableRow>
                   );
                 })}

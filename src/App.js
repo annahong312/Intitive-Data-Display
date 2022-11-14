@@ -67,10 +67,6 @@ function App() {
     })
     // GetAttributes(setFilters);
     GetAttributes(createMultipleSelect);
-    GetData(JSON.stringify({
-      filters: "1",
-      splitColumn: "Ethnicity"
-    }), setData);
   }
 
   const login = useGoogleLogin({

@@ -1,6 +1,6 @@
 import { gapi } from 'gapi-script';
 
-const scriptId = 'AKfycby9OQQ-Za7T-czL9gIIcnYWxCNSIsjQYkXfdwYWzXQQN39qe4FuOK5VhI1uR1_o7Bpn';
+const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
 
 /**
  * Load the API and make an API call.  Display the results on the screen.
@@ -56,6 +56,8 @@ const scriptId = 'AKfycby9OQQ-Za7T-czL9gIIcnYWxCNSIsjQYkXfdwYWzXQQN39qe4FuOK5VhI
   //   'resource' describes the run request body (with the function name
   //              to execute)
   try {
+    console.log("Calling with parameters");
+    console.log(parameters);
     gapi.client.script.scripts.run({
       'scriptId': scriptId,
       'resource': {
