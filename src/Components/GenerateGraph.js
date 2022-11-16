@@ -29,7 +29,11 @@ function GetData(props) {
     if (key === "total") {
       filterName = "Total";
     } else {
-      filterName = Object.keys(props.filterDict).find(filterKey => props.filterDict[filterKey] === parseInt(key));
+      // filterName = Object.keys(props.filterDict).find(filterKey => props.filterDict[filterKey] === parseInt(key));
+      filterName = props.filterDict[key];
+      // console.log("filtername is " + filterName);
+      // console.log(props.filterDict);
+      // console.log("End");
     }
     returnData.push({
       label: filterName,

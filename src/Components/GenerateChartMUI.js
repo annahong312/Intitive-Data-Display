@@ -329,6 +329,40 @@ export default function EnhancedTable(props) {
                       <TableCell align="right">{row.total}</TableCell>
                     </TableRow>
                   );
+
+                  // -----------------------  start of table row -----------------------
+                  // <TableRow
+                  //     hover
+                  //     onClick={(event) => handleClick(event, row.name)}
+                  //     role="checkbox"
+                  //     aria-checked={isItemSelected}
+                  //     tabIndex={-1}
+                  //     key={row.name}
+                  //     selected={isItemSelected}
+                  //   >
+                  //     <TableCell padding="checkbox">
+                  //       <Checkbox
+                  //         color="primary"
+                  //         checked={isItemSelected}
+                  //         inputProps={{
+                  //           'aria-labelledby': labelId,
+                  //         }}
+                  //       />
+                  //     </TableCell>
+                  //     <TableCell
+                  //       component="th"
+                  //       id={labelId}
+                  //       scope="row"
+                  //       padding="none"
+                  //     >
+                  //       TOTAL TEST
+                  //     </TableCell>
+                  //     {attributes.map((i) => {
+                  //       return(<TableCell align="right">{row[i]}</TableCell>);
+                  //     })}
+                  //     <TableCell align="right">{row.total}</TableCell>
+                  //   </TableRow>
+                    // -----------------------  end of table row -----------------------
                 })}
               {emptyRows > 0 && (
                 <TableRow

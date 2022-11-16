@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
 import './App.css';
 import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
-// import getUpdatedNameVals from "./Components/MultipleSelect";
 import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js'
 import { useGoogleLogin } from '@react-oauth/google';
 import { GetAttributes, GetData } from './Scripts'
@@ -15,6 +13,8 @@ var dataCalled = false;
 var rate = "Enrollment Rate";
 
 var filterDict = {};
+var filterMasterList = new Map();
+var filterIdsToNames = {};
 
 gapi.load('client:auth2', initClient);
 function initClient() {
@@ -53,6 +53,7 @@ function App() {
     scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
   });
 
+  // TODO: refactor filterdict
   const createMultipleSelect = (filters) => {
 
     // set attributes
@@ -63,18 +64,30 @@ function App() {
     // console.log("dropdownLabels: " + dropdownLabels);
     // console.log(attributes + " is attributes in createMultipleSelect");
     
+    // Mapping filters to names 
+    // Todo: check this for broken attributes asdf
+    // Filter = string name, need to map to a separate map
     var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
+      // map keys with filter
+      // Stayed in Viterbi (key), filterDict (val) => Y:0, N:1
+      var curFilterDict = {}
+
       var keys = Object.keys(dropdownLabels[filter]);
       var values = Object.values(dropdownLabels[filter]);
       for (var i = 0; i < keys.length; i++) {
-        filterDict[keys[i]] = values[i];
+        curFilterDict[keys[i]] = values[i];
+        filterDict[keys[i]] = values[i]; //TODO remove
+        filterIdsToNames[values[i]] = keys[i];
         // console.log(keys[i], values[i], " are keys and values");
       }
+      filterMasterList.set(filter, curFilterDict);
+
       return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
       // <MultipleSelect givenNames={filter.options} label={filter.name} />
     });
 
     // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
+    
     setDropdownList(dropdownList.concat(newFilterDropdowns));
     setRateDropdown(<select name="selectAllFilters" id="selectAllFilters">
     {Object.keys(filters.data.attributes).map((i) => {
@@ -83,19 +96,26 @@ function App() {
   };
 
 
+  // Called on Generate Chart
   // function to return data from API call
   const getAPIData = () => {
     var vals = getUpdatedNameVals();
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(vals))));
 
+    console.log(filterMap, " is filterMap");
+
     setFilterList(filterList.concat(filterMap));
     setCurrFilters(filterMap);
     var valueArray = [];
       for (let [key, value] of filterMap) {
         for (var val in value) {
-          // console.log(filterDict[value[val]], "is value[val]");
-          valueArray.push(filterDict[value[val]]);
+          console.log(value[val], " is value[val]", " and key is ", key, " and value is ", value);
+          valueArray.push(filterMasterList.get(key)[value[val]]);
+          console.log(filterMasterList.get(key), " is filterMasterList.get(key)");
+          console.log(filterMasterList.get(key)[value[val]], "is value[val]");
+          // valueArray.push(filterDict[value[val]]);
+          console.log(filterDict[value[val]], "is filterDict value[val]");
         }
 
       }
@@ -103,7 +123,7 @@ function App() {
 
       var e = document.getElementById("selectAllFilters");
       var splitColValue = e.value;
-      console.log(splitColValue, "is splitColValue");
+      // console.log(splitColValue, "is splitColValue");
       
       GetData(JSON.stringify({
         filters: valueArray,
@@ -111,6 +131,7 @@ function App() {
       }), onAddBtnClickGraph);
   }
 
+  // Map ID's back to Names
   // build tab list
   const [tabList, setTabList] = useState([]);
   const onAddBtnClickGraph = (data) => {
@@ -122,7 +143,8 @@ function App() {
       if(key === "total") {
         filterName = "Total";
       } else {
-        filterName = Object.keys(filterDict).find(filterKey => filterDict[filterKey] === parseInt(key));
+        // filterName = Object.keys(filterDict).find(filterKey => filterDict[filterKey] === parseInt(key));
+        filterName = filterIdsToNames[key];
       }
       var dataRates = value.rates[rate];
 
@@ -149,7 +171,7 @@ function App() {
     var splitColValue = e.value;
 
     var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributes.rates[rate]}/>;
-    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]} filterDict={filterDict}/>;
+    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]} filterDict={filterIdsToNames}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
 
@@ -157,17 +179,15 @@ function App() {
     var tabName = document.getElementsByClassName("fname")[0].value;
     // console.log(tabName + " tabName");
 
-     // TODO: we will need to check for duplicate names 
+     // TODO: display error message on duplicate name asdf
      if (! tabList.includes(tabName)){
       if (tabName === "") {
-        // console.log("tabName is empty");
         tabName = "Tab " + (maxIndex + 1);
 
       }
       setTabList(tabList.concat(tabName));
       setCurrChart(newChart);
       setTabIsActive(curIndex);
-      // setCurrFilters(filterMap);
      }
      else{
       console.log("Tab name already exists!");

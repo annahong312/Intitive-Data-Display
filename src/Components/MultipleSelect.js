@@ -33,10 +33,12 @@ var usedNameVals = new Map();
 
 
 function nameValUpdate(curNameVals, label) {
-    usedNameVals = usedNameVals.set(label, curNameVals);
     if (curNameVals.length < 1) {
-      usedNameVals = usedNameVals.delete(label);
+      usedNameVals.delete(label);
+    } else {
+      usedNameVals = usedNameVals.set(label, curNameVals);
     }
+    // console.log(usedNameVals + " is usedNameVals for " + label);
 }
 
 export const getUpdatedNameVals = () => {
