@@ -1,6 +1,6 @@
 import { gapi } from 'gapi-script';
 
-const scriptId = 'AKfycby9OQQ-Za7T-czL9gIIcnYWxCNSIsjQYkXfdwYWzXQQN39qe4FuOK5VhI1uR1_o7Bpn';
+const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
 
 /**
  * Load the API and make an API call.  Display the results on the screen.
@@ -30,18 +30,19 @@ const scriptId = 'AKfycby9OQQ-Za7T-czL9gIIcnYWxCNSIsjQYkXfdwYWzXQQN39qe4FuOK5VhI
             // executing.
             //appendPre('Script error stacktrace:');
             for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
-              const trace = error.scriptStackTraceElements[i];
+              // const trace = error.scriptStackTraceElements[i];
               //appendPre('\t' + trace.function + ':' + trace.lineNumber);
             }
           }
         } else {
           // The structure of the result will depend upon what the Apps
           console.log(result);
+          console.log("parsed results: ", JSON.parse(result.response.result));
           setObject(JSON.parse(result.response.result));
         }
       });
     } catch (err) {
-        console.log(err);
+      console.log(err);
       return;
     }
   }
@@ -75,7 +76,7 @@ const scriptId = 'AKfycby9OQQ-Za7T-czL9gIIcnYWxCNSIsjQYkXfdwYWzXQQN39qe4FuOK5VhI
           // executing.
           //appendPre('Script error stacktrace:');
           for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
-            const trace = error.scriptStackTraceElements[i];
+            // const trace = error.scriptStackTraceElements[i];
             //appendPre('\t' + trace.function + ':' + trace.lineNumber);
           }
         }

@@ -1,34 +1,19 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
 import './App.css';
 import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
-// import getUpdatedNameVals from "./Components/MultipleSelect";
 import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js'
 import { useGoogleLogin } from '@react-oauth/google';
 import { GetAttributes, GetData } from './Scripts'
 import { gapi } from 'gapi-script';
 
-  
 var curIndex = -1;
 var maxIndex = -1;
-var dataCalled = false;
+var rate = "Enrollment Rate";
 
-const namesGender = [
-  'Male',
-  'Female',
-  'Non-binary',
-];
-
-const namesMajors = [
-  'CSCI',
-  'BME',
-  'CSBA',
-  'ME',
-  'CECS',
-  'CE',
-  'EE',
-];
+var filterDict = {};
+var filterMasterList = new Map();
+var filterIdsToNames = {};
 
 gapi.load('client:auth2', initClient);
 function initClient() {
@@ -38,8 +23,8 @@ function initClient() {
 }
 
 function App() {
-  const [filters2, setFilters] = useState({});
-  const [data, setData] = useState({});
+  const [attributes, setAttributes] = useState({});
+  const [rateDropdown, setRateDropdown] = useState([]);
 
   const [chartList, setChartList] = useState([]);
 
@@ -57,11 +42,8 @@ function App() {
     gapi.client.setToken({
       access_token: tokenResponse.access_token
     })
-    GetAttributes(setFilters);
-    GetData(JSON.stringify({
-      filters: "1",
-      splitColumn: "Ethnicity"
-    }), setData);
+    // GetAttributes(setFilters);
+    GetAttributes(createMultipleSelect);
   }
 
   const login = useGoogleLogin({
@@ -70,125 +52,179 @@ function App() {
     scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
   });
 
-  const createMultipleSelect = () => {
-    // setDropdownList([]);
-    // var newFilterDropdowns = [];
-    // for (var i = 0; i < dropdownLabels.length; i++) {
-    //   console.log("dropdownLabels[i]: " + dropdownLabels[i]);
-    //   var curLabel = dropdownLabels[i];
-    //   newFilterDropdowns.push(<MultipleSelect givenNames={namesGender} label={curLabel}/>);
-    //   // setFilterList(filterList => [filterList.concat(<MultipleSelect givenNames={namesGender} label={curLabel} />)]);
-    // }
+  // TODO: refactor filterdict
+  const createMultipleSelect = (filters) => {
 
-    var newFilterDropdown = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    // console.log(newFilterDropdown);
-    setDropdownList(dropdownList.concat(newFilterDropdown));
+    // set attributes
+    setAttributes(filters.data);
+
+    var dropdownLabels = filters.data.attributes;
+
+    // console.log("dropdownLabels: " + dropdownLabels);
+    // console.log(attributes + " is attributes in createMultipleSelect");
+    
+    // Mapping filters to names 
+    // Todo: check this for broken attributes asdf
+    // Filter = string name, need to map to a separate map
+    var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
+      // map keys with filter
+      // Stayed in Viterbi (key), filterDict (val) => Y:0, N:1
+      var curFilterDict = {}
+
+      var keys = Object.keys(dropdownLabels[filter]);
+      var values = Object.values(dropdownLabels[filter]);
+      for (var i = 0; i < keys.length; i++) {
+        curFilterDict[keys[i]] = values[i];
+        filterDict[keys[i]] = values[i]; //TODO remove
+        filterIdsToNames[values[i]] = keys[i];
+        // console.log(keys[i], values[i], " are keys and values");
+      }
+      filterMasterList.set(filter, curFilterDict);
+
+      return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
+      // <MultipleSelect givenNames={filter.options} label={filter.name} />
+    });
+
+    // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
+    
+    setDropdownList(dropdownList.concat(newFilterDropdowns));
+    setRateDropdown(<select name="selectAllFilters" id="selectAllFilters">
+    {Object.keys(filters.data.attributes).map((i) => {
+                  return(<option value={i}>{i}</option>);
+            })} </select>)
   };
 
-  useEffect(() => { 
-    // call apis to get filter options labels
-    if (!dataCalled) {
-      createMultipleSelect();
-      dataCalled = true;
 
-      // var filters = filterList.map((filter) => {
-      //   return filter.props.givenNames;
-      // });
-      // console.log(filters);
-
-      // var firstFilter = filterList[0];
-      // console.log(firstFilter);
-  
-    }
-  });
-
-  // build tab list
-  const [tabList, setTabList] = useState([]);
-  // let TESTCHART = chartList[0];
-  const onAddBtnClickGraph = event => {
-    // get current filters selected
-    // var filters = dropdownList.map((filter) => {
-    //   return filter.props.givenNames;
-    // });
-    // console.log(filters + " filters");
-
-    // TODO: we will need to check for duplicate names 
+  // Called on Generate Chart
+  // function to return data from API call
+  const getAPIData = () => {
     var vals = getUpdatedNameVals();
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(vals))));
-    console.log(filterMap.get("Gender") + " vals at gender");
-    console.log(filterMap.get("Major") + " vals at major");
+
+    console.log(filterMap, " is filterMap");
+
+    setFilterList(filterList.concat(filterMap));
+    setCurrFilters(filterMap);
+    var valueArray = [];
+      for (let [key, value] of filterMap) {
+        for (var val in value) {
+          console.log(value[val], " is value[val]", " and key is ", key, " and value is ", value);
+          valueArray.push(filterMasterList.get(key)[value[val]]);
+          console.log(filterMasterList.get(key), " is filterMasterList.get(key)");
+          console.log(filterMasterList.get(key)[value[val]], "is value[val]");
+          // valueArray.push(filterDict[value[val]]);
+          console.log(filterDict[value[val]], "is filterDict value[val]");
+        }
+
+      }
+      console.log(valueArray);
+
+      var e = document.getElementById("selectAllFilters");
+      var splitColValue = e.value;
+      // console.log(splitColValue, "is splitColValue");
+      
+      GetData(JSON.stringify({
+        filters: valueArray,
+        splitColumn: splitColValue,
+      }), onAddBtnClickGraph);
+  }
+
+  // Map ID's back to Names
+  // build tab list
+  const [tabList, setTabList] = useState([]);
+  const onAddBtnClickGraph = (data) => {
+    // process data into a list
+    var dataRows = []
+    for(const [key,value] of Object.entries(data.data)) {
+      // change key into respective filter value
+      var filterName = "";
+      if(key === "total") {
+        filterName = "Total";
+      } else {
+        // filterName = Object.keys(filterDict).find(filterKey => filterDict[filterKey] === parseInt(key));
+        filterName = filterIdsToNames[key];
+      }
+      var dataRates = value.rates[rate];
+
+      var dataRow = {
+        name: filterName,
+        total: value.count
+      }
+      for(let i = 0; i < dataRates.length; i++) {
+        dataRow[attributes.rates[rate][i]] = dataRates[i];
+      }
+      dataRows.push(dataRow);
+
+    }
+
+    // console.log(data.data + " is data in onAddBtnClickGraph");
 
     curIndex++;
     maxIndex++;
 
-    setFilterList(filterList.concat(filterMap));
-    console.log(filterList[maxIndex] + " filterList");
-    // console.log(filterList.length + " filterList length");
-    var newChart = <GenerateChartMUI index={maxIndex }/>;
-    var newGraph = <GenerateGraph index={maxIndex }/>;
+    // setFilterList(filterList.concat(filterMap));
+    // console.log(filterList[maxIndex] + " filterList");
+
+    var e = document.getElementById("selectAllFilters");
+    var splitColValue = e.value;
+
+    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributes.rates[rate]}/>;
+    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]} filterDict={filterIdsToNames}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
-    // print length of chartList
-    // console.log(chartList.length + " chartList length");
+
     // get name of tab from fname input field
     var tabName = document.getElementsByClassName("fname")[0].value;
     // console.log(tabName + " tabName");
-    if (tabName === "") {
-      console.log("tabName is empty");
-      tabName = "Tab " + (maxIndex + 1);
-    }
-    
-    // setTabList(tabList.concat(<button className="tablinks" onclick="">{tabName}</button>));
-    setTabList(tabList.concat(tabName));
-    setCurrChart(newChart);
-    setTabIsActive(curIndex);
-    setCurrFilters(filterMap);
 
-    // // Update the current tab name
-    // setCurrTabName("Tab " + (curIndex + 1));
+     // TODO: display error message on duplicate name asdf
+     if (! tabList.includes(tabName)){
+      if (tabName === "") {
+        tabName = "Tab " + (maxIndex + 1);
+
+      }
+      setTabList(tabList.concat(tabName));
+      setCurrChart(newChart);
+      setTabIsActive(curIndex);
+     }
+     else{
+      console.log("Tab name already exists!");
+     }
 
   };
 
   // make a function for clicking tab event
   const onTabClick = (index) => {
-    // get the index of the tab
-    // var name = event.target.innerHTML.substring(4);
-    // get the index of the tab from its name and search tablist for index
-    // var index = tabList.indexOf(event.target.id);
-    // console.log(index + " index of tab" + " tabList: " + event.target.name);
-    console.log(tabList + " tabList");
-    console.log(index + " index tabClick");
 
-    // set the index of the tab to be the current index
-    // curIndex = index - 1;
     curIndex = index;
     setCurrChart(chartList[curIndex]);
     console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
     setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
-
-    // Update the current tab name
-    // setCurrTabName("Tab " + index);
   };
 
   // make function to delete a tab from the list
   const onDeleteTab = (index) => {
     // get the index of the tab
-    // var index = event.target.innerHTML.substring(4);
-    // console.log(index + " is delete tab index");
     if (index === 0 && chartList.length === 1) {
-      // set chart as empty list
-      setChartList([]);
-      // set graph as empty list
-      setGraphList([]);
-      // set tab as empty list
-      setTabList([]);
-      // set current chart as empty list
-      setCurrChart([]);
-      // set current filters as empty list
-      setCurrFilters([]);
-      // set current index as -1
+      // useEffect(() => {
+        // set chart as empty list
+        setChartList([]);
+        // set graph as empty list
+        setGraphList([]);
+        // set tab as empty list
+        setTabList([]);
+        //set filters list
+        setFilterList([]);
+        // set current chart as empty list
+        
+        setCurrChart([]);
+        // set current filters as empty list
+        setCurrFilters([]);
+        // set current index as -1
+      // });
+
       curIndex = -1;
       // set max index as -1
       maxIndex = -1;
@@ -209,23 +245,23 @@ function App() {
       var toRemoveFilter = filterList[index];
       setFilterList(filterList.filter(item => item !== toRemoveFilter));     
       
-      if (index === curIndex) {
-        curIndex++;
-      } 
+      if (index === curIndex && index === 0) {
+        // curIndex++;
+        curIndex = 0;
+      } else {
+        curIndex--;
+      }
       maxIndex = chartList.length;
 
       setCurrChart(chartList[curIndex]);
       setCurrFilters(filterList[curIndex]);
     }
 
-    // Update the current tab name
-    // setCurrTabName("Tab " + curIndex);
-
   };
 
   // function for formatting print the filter map out nicely
   const printFilterMap = (filterMap) => {
-    console.log("printing filter map", filterMap, curIndex);
+    // console.log("printing filter map", filterMap, curIndex);
     var htmlstr = "";
     if (filterMap === undefined) {
       return htmlstr;
@@ -233,8 +269,6 @@ function App() {
     for (var [key, value] of filterMap) {
       // generate html of key and value for each filter
       htmlstr += "<p><b>" + key + ": </b>" + value + "</p><br>";
-      
-      // htmlstr += key + ": " + value + "\n\n";
     }
     return htmlstr;
   };
@@ -252,17 +286,21 @@ function App() {
 
       <div className="Checkbox-Background">
         <p>Filter Options</p>
-        {/* <MultipleSelectGender /> */}
-        {/* <MultipleSelectMajor /> */}
-        {/* Todo: Use a loop to walk through and generate each filter */}
-        {/* <MultipleSelect  givenNames={namesGender} label="Gender" /> */}
-        {/* <MultipleSelect  givenNames={namesMajors} label="Major" /> */}
+        <label for="selectAllFilters">Choose a filter to sort by: </label>
+        {/* <select name="selectAllFilters" id="selectAllFilters">
+          {Object.keys(attributes.attributes).map((i) => {
+                        return(<option value="i">{i}</option>);
+                  })}
+        </select> */}
+        {rateDropdown}
         {dropdownList}
       </div>
-      <label for="fname">Graph name:</label>
-      <input type="text" id="fname" class="fname"> 
-      </input>
-      <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button>
+      <div className="Button-Background" >
+        <label for="fname">Graph name:  </label>
+        <input type="text" id="fname" class="fname"></input>
+        {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
+        <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
+      </div>
     </div>
 
 
@@ -280,10 +318,7 @@ function App() {
 
     <div style={{paddingBottom:'100px'}}>
       <h1>Filters</h1>
-      {/* print filters with printFilterMap */}
-      {/* currFilters && printFilterMap(currFilters) */}
       <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
-      {/* {currFilters} */}
     </div>
 
     <div style={{paddingBottom:'300px'}}>
