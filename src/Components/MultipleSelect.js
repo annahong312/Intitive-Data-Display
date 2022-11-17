@@ -101,7 +101,7 @@ export default function MultipleSelect(givenNames) {
         justifyContent="center"
       >
         <Grid item >
-              <FormControl sx={{ m: 1, width: 300 }}>
+              <FormControl sx={{ m: 1, width: 250 }}>
             <InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
             <Select
               labelId="demo-multiple-chip-label"
@@ -111,7 +111,7 @@ export default function MultipleSelect(givenNames) {
               onChange={handleChange}
               input={<OutlinedInput id="select-multiple-chip" label={label}/>} //select-multiple-chip
               renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.25 }}>
                   {selected.map((value) => (
                     <Chip 
                     key={value}  
@@ -142,8 +142,8 @@ export default function MultipleSelect(givenNames) {
 
         <Grid item >
           <Grid container>
-            <Grid item xs={8}><button className="selectButton" onClick={selectAll}>Select All</button> </Grid>
-            <Grid item xs={8}><button className="selectButton" onClick={clearAll}>Clear All</button> </Grid>
+            <Grid item xs={7}><button className="selectButton" onClick={selectAll}>Select All</button> </Grid>
+            <Grid item xs={7}><button className="selectButton" onClick={clearAll}>Clear All</button> </Grid>
           </Grid>
         </Grid>
       </Grid>

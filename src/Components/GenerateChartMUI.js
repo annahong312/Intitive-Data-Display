@@ -1,26 +1,29 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import { alpha } from '@mui/material/styles';
-import Switch from '@mui/material/Switch';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { visuallyHidden } from '@mui/utils';
-import PropTypes from 'prop-types';
-import * as React from 'react';
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import { alpha } from "@mui/material/styles";
+import Switch from "@mui/material/Switch";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { visuallyHidden } from "@mui/utils";
+import PropTypes from "prop-types";
+import * as React from "react";
+import { useJsonToCsv } from "react-json-csv";
+// import { UseJsonToCsv } from "./CSV";
+import ConvertToCSV from "./CSV/ConvertToCSV.js";
 
 var curRate = "";
 
@@ -35,7 +38,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -58,27 +61,28 @@ function createHeadCells(labels) {
   // prepend name column
   const headCells = [
     {
-      id: 'name',
+      id: "name",
       numeric: false,
       disablePadding: true,
-      label: 'Filter',
-    }];
-    // add rest of the labels to headCells
-    labels.forEach((label) => {
-      headCells.push({
-        id: label,
-        numeric: true,
-        disablePadding: false,
-        label,
-      });
-    });
+      label: "Filter",
+    },
+  ];
+  // add rest of the labels to headCells
+  labels.forEach((label) => {
     headCells.push({
-      id: 'total',
+      id: label,
       numeric: true,
       disablePadding: false,
-      label: 'Total',
+      label,
     });
-    return headCells;
+  });
+  headCells.push({
+    id: "total",
+    numeric: true,
+    disablePadding: false,
+    label: "Total",
+  });
+  return headCells;
   // return labels.map((label) => ({
   //   id: label,
   //   numeric: false,
@@ -88,9 +92,16 @@ function createHeadCells(labels) {
 }
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, attributes } =
-    props;
-    // console.log(attributes);
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+    attributes,
+  } = props;
+  // console.log(attributes);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -105,26 +116,26 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              "aria-label": "select all desserts",
             }}
           />
         </TableCell>
         {createHeadCells(attributes).map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? "right" : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -139,7 +150,7 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
   attributes: PropTypes.array.isRequired,
@@ -155,13 +166,16 @@ const EnhancedTableToolbar = (props) => {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -170,7 +184,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -201,8 +215,8 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable(props) {
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [order, setOrder] = React.useState("asc");
+  const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
@@ -215,9 +229,54 @@ export default function EnhancedTable(props) {
   const attributes = props.attributes;
   curRate = props.rate;
 
+  // const { saveAsCsv } = useJsonToCsv();
+  // ref https://github.com/praveenkumar-kalidass/react-json-csv/blob/master/src/constants/index.js
+  // const filename = 'chart_data';
+
+  const downloadFile = ({ data, fileName, fileType }) => {
+    const blob = new Blob([data], { type: fileType });
+
+    const a = document.createElement("a");
+    a.download = fileName;
+    a.href = window.URL.createObjectURL(blob);
+    const clickEvt = new MouseEvent("click", {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    });
+    a.dispatchEvent(clickEvt);
+    a.remove();
+  };
+
+  const exportToCsv = (e) => {
+    e.preventDefault();
+
+    // Headers for each column
+    let headers = ["name"];
+    for (let i = 0; i < attributes.length; i++) {
+      headers.push(attributes[i]);
+    }
+    // call convertToCSV function which will create the CSV from the JSON Data
+    // console.log(rows, " are rows and ", headers, " are headers");
+    const csv = ConvertToCSV(rows, headers);
+
+    // Convert users data to a csv
+    // let usersCsv = usersData.users.reduce((acc, user) => {
+    //   const { id, name, surname, age } = user
+    //   acc.push([id, name, surname, age].join(','))
+    //   return acc
+    // }, [])
+
+    downloadFile({
+      data: [csv].join("\n"), //...headers, ..
+      fileName: "chart_data.csv",
+      fileType: "text/csv",
+    });
+  };
+
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -243,7 +302,7 @@ export default function EnhancedTable(props) {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
 
@@ -269,15 +328,16 @@ export default function EnhancedTable(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+  var TotalRow;
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size={dense ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -296,74 +356,78 @@ export default function EnhancedTable(props) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.name)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.name}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
+                  if (row.name != "Total") {
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.name)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.name}
+                        selected={isItemSelected}
                       >
-                        {row.name}
-                      </TableCell>
-                      {attributes.map((i) => {
-                        return(<TableCell align="right">{row[i]}</TableCell>);
-                      })}
-                      <TableCell align="right">{row.total}</TableCell>
-                    </TableRow>
-                  );
-
-                  // -----------------------  start of table row -----------------------
-                  // <TableRow
-                  //     hover
-                  //     onClick={(event) => handleClick(event, row.name)}
-                  //     role="checkbox"
-                  //     aria-checked={isItemSelected}
-                  //     tabIndex={-1}
-                  //     key={row.name}
-                  //     selected={isItemSelected}
-                  //   >
-                  //     <TableCell padding="checkbox">
-                  //       <Checkbox
-                  //         color="primary"
-                  //         checked={isItemSelected}
-                  //         inputProps={{
-                  //           'aria-labelledby': labelId,
-                  //         }}
-                  //       />
-                  //     </TableCell>
-                  //     <TableCell
-                  //       component="th"
-                  //       id={labelId}
-                  //       scope="row"
-                  //       padding="none"
-                  //     >
-                  //       TOTAL TEST
-                  //     </TableCell>
-                  //     {attributes.map((i) => {
-                  //       return(<TableCell align="right">{row[i]}</TableCell>);
-                  //     })}
-                  //     <TableCell align="right">{row.total}</TableCell>
-                  //   </TableRow>
-                    // -----------------------  end of table row -----------------------
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              "aria-labelledby": labelId,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
+                          {row.name}
+                        </TableCell>
+                        {attributes.map((i) => {
+                          return <TableCell align="right">{row[i]}</TableCell>;
+                        })}
+                        <TableCell align="right">{row.total}</TableCell>
+                      </TableRow>
+                    );
+                  } else {
+                    TotalRow = (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.name)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.name}
+                        selected={isItemSelected}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              "aria-labelledby": labelId,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
+                          {row.name}
+                        </TableCell>
+                        {attributes.map((i) => {
+                          return <TableCell align="right">{row[i]}</TableCell>;
+                        })}
+                        <TableCell align="right">{row.total}</TableCell>
+                      </TableRow>
+                    );
+                  }
                 })}
+              {console.log(TotalRow, " is total row")}
+              {TotalRow}
               {emptyRows > 0 && (
                 <TableRow
                   style={{
@@ -377,7 +441,7 @@ export default function EnhancedTable(props) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
@@ -390,6 +454,12 @@ export default function EnhancedTable(props) {
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       />
+      {/* <button onClick={saveAsCsv({rows, attributes, filename})}> 
+      useJsonToCsv
+    </button> */}
+      <button type="button" onClick={exportToCsv}>
+        Export to CSV
+      </button>
     </Box>
   );
 }

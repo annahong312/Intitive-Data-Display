@@ -6,6 +6,8 @@ import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js
 import { useGoogleLogin } from '@react-oauth/google';
 import { GetAttributes, GetData } from './Scripts'
 import { gapi } from 'gapi-script';
+import { Grid } from '@mui/material';
+
 
 var curIndex = -1;
 var maxIndex = -1;
@@ -31,6 +33,8 @@ function App() {
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
   const [dropdownList, setDropdownList] = useState([]);
+  const [dropdownList2, setDropdownList2] = useState([]);
+  const [dropdownList3, setDropdownList3] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
 
@@ -42,7 +46,6 @@ function App() {
     gapi.client.setToken({
       access_token: tokenResponse.access_token
     })
-    // GetAttributes(setFilters);
     GetAttributes(createMultipleSelect);
   }
 
@@ -53,12 +56,15 @@ function App() {
   });
 
   // TODO: refactor filterdict
+  var filterCount = 0;
   const createMultipleSelect = (filters) => {
 
     // set attributes
     setAttributes(filters.data);
 
     var dropdownLabels = filters.data.attributes;
+    
+    
 
     // console.log("dropdownLabels: " + dropdownLabels);
     // console.log(attributes + " is attributes in createMultipleSelect");
@@ -82,11 +88,8 @@ function App() {
       filterMasterList.set(filter, curFilterDict);
 
       return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
-      // <MultipleSelect givenNames={filter.options} label={filter.name} />
-    });
+    });    
 
-    // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    
     setDropdownList(dropdownList.concat(newFilterDropdowns));
     setRateDropdown(<select name="selectAllFilters" id="selectAllFilters">
     {Object.keys(filters.data.attributes).map((i) => {
@@ -182,14 +185,13 @@ function App() {
      if (! tabList.includes(tabName)){
       if (tabName === "") {
         tabName = "Tab " + (maxIndex + 1);
-
       }
       setTabList(tabList.concat(tabName));
       setCurrChart(newChart);
       setTabIsActive(curIndex);
      }
      else{
-      console.log("Tab name already exists!");
+      alert("Please select a new tab name.");
      }
 
   };
@@ -273,6 +275,8 @@ function App() {
     return htmlstr;
   };
 
+  const filterListLen = Object.keys(dropdownList).length;
+
 
   return (<div className="App">
     {/* <header className="App-header"> </header> */}
@@ -293,7 +297,18 @@ function App() {
                   })}
         </select> */}
         {rateDropdown}
-        {dropdownList}
+        <Grid container>
+          <Grid item >
+            {dropdownList.slice(0, filterListLen / 3)}
+          </Grid>
+          <Grid item >
+            {dropdownList.slice(filterListLen / 3, 2 * filterListLen / 3)}
+          </Grid>
+          <Grid item >
+            {dropdownList.slice(2 * (filterListLen / 3), filterListLen)}
+          </Grid>
+        </Grid>
+       
       </div>
       <div className="Button-Background" >
         <label for="fname">Graph name:  </label>
@@ -316,15 +331,13 @@ function App() {
     </div>
 
 
-    <div style={{paddingBottom:'100px'}}>
+    <div style={{paddingBottom:'50px'}}>
       <h1>Filters</h1>
       <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
     </div>
 
-    <div style={{paddingBottom:'300px'}}>
+    <div style={{paddingBottom:'50px'}}>
       <h1>Chart</h1>
-      {/* {chartList[curIndex]} */}
-      {/* {chartList[tabSelector()]} */}
       {currChart}
     </div>
 
