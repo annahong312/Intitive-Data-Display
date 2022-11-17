@@ -9,7 +9,6 @@ import { gapi } from 'gapi-script';
 
 var curIndex = -1;
 var maxIndex = -1;
-var dataCalled = false;
 var rate = "Enrollment Rate";
 
 var filterDict = {};
