@@ -2,92 +2,58 @@ import { gapi } from 'gapi-script';
 
 const scriptId = process.env.REACT_APP_GOOGLE_SCRIPT_ID;
 
-/**
- * Load the API and make an API call.  Display the results on the screen.
- */
- export function GetAttributes(setObject) {
-    // Call the Apps Script API run method
-    //   'scriptId' is the URL parameter that states what script to run
-    //   'resource' describes the run request body (with the function name
-    //              to execute)
-    try {
-      gapi.client.script.scripts.run({
-        'scriptId': scriptId,
-        'resource': {
-          'function': 'API_GetAttributes'
-        },
-      }).then(function(resp) {
-        const result = resp.result;
-        if (result.error && result.error.status) {
-          // The API encountered a problem before the script
-        } else if (result.error) {
-          // The API executed, but the script returned an error.
-          const error = result.error.details[0];
-          // appendPre('Script error message: ' + error.errorMessage);
-  
-          if (error.scriptStackTraceElements) {
-            // There may not be a stacktrace if the script didn't start
-            // executing.
-            //appendPre('Script error stacktrace:');
-            for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
-              // const trace = error.scriptStackTraceElements[i];
-              //appendPre('\t' + trace.function + ':' + trace.lineNumber);
-            }
-          }
-        } else {
-          // The structure of the result will depend upon what the Apps
-          console.log(result);
-          console.log("parsed results: ", JSON.parse(result.response.result));
-          setObject(JSON.parse(result.response.result));
-        }
-      });
-    } catch (err) {
-      console.log(err);
-      return;
-    }
-  }
-
-  /**
- * Load the API and make an API call.  Display the results on the screen.
- */
- export function GetData(parameters, setObject) {
-  // Call the Apps Script API run method
-  //   'scriptId' is the URL parameter that states what script to run
-  //   'resource' describes the run request body (with the function name
-  //              to execute)
+function CallAPI(functionName, parameters, setObject, setError) {
   try {
     gapi.client.script.scripts.run({
       'scriptId': scriptId,
       'resource': {
-        'function': 'API_GetData',
+        'function': functionName,
         'parameters': [parameters]
       },
     }).then(function(resp) {
       const result = resp.result;
       if (result.error && result.error.status) {
         // The API encountered a problem before the script
+        console.log(result.error);
+        setError("Internal Server Error: Try again later or contact system administrator");
       } else if (result.error) {
         // The API executed, but the script returned an error.
-        const error = result.error.details[0];
-        // appendPre('Script error message: ' + error.errorMessage);
-
-        if (error.scriptStackTraceElements) {
-          // There may not be a stacktrace if the script didn't start
-          // executing.
-          //appendPre('Script error stacktrace:');
-          for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
-            // const trace = error.scriptStackTraceElements[i];
-            //appendPre('\t' + trace.function + ':' + trace.lineNumber);
-          }
-        }
+        console.log(result.error);
+        setError("Access Denied: Please contact administrators for access");
       } else {
         // The structure of the result will depend upon what the Apps
-        console.log(result);
-        setObject(JSON.parse(result.response.result));
+        const resultObject = JSON.parse(result.response.result);
+        if(resultObject.status === "Failure") {
+          console.log(result);
+          if(resultObject.error === "Unable to open spreadsheet") {
+            setError("Access Denied: Please contact administrators for access");
+          }
+          else {
+            setError("Internal Server Error: Try again later or contact system administrator");
+          }
+        }
+        else {
+          setObject(resultObject);
+        }
       }
     });
   } catch (err) {
-      console.log(err);
+    console.log(err);
+    setError("Internal Server Error: Try again later or contact system administrator");
     return;
   }
 }
+
+/**
+ * Load the API and make an API call.  Display the results on the screen.
+ */
+ export function GetAttributes(setObject, setError) {
+  CallAPI('API_GetAttributes', {}, setObject, setError);
+ }
+
+  /**
+ * Load the API and make an API call.  Display the results on the screen.
+ */
+ export function GetData(parameters, setObject, setError) {
+  CallAPI('API_GetData', parameters, setObject, setError);
+ }
