@@ -6,10 +6,12 @@ import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js
 import { GetAttributes, GetData } from './Scripts'
 import Login from './Components/Login';
 import ErrorMessage from './Components/ErrorMessage'
+import { Grid } from '@mui/material';
 
 var curIndex = -1;
 var maxIndex = -1;
 var rate = "Enrollment Rate";
+var storeRateOptions = [];
 
 var filterDict = {};
 var filterMasterList = new Map();
@@ -17,7 +19,9 @@ var filterIdsToNames = {};
 
 function App() {
   const [attributes, setAttributes] = useState({});
-  const [rateDropdown, setRateDropdown] = useState([]);
+  const [splitDropdown, setSplitDropdown] = useState([]);
+  const [rateOptions, setRateOptions] = useState([]);
+  
 
   const [chartList, setChartList] = useState([]);
 
@@ -26,8 +30,6 @@ function App() {
   const [dropdownList, setDropdownList] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
-
-
   const [tabIsActive, setTabIsActive] = useState(0);
 
   const [error, setError] = useState(false);
@@ -46,9 +48,14 @@ function App() {
   const createMultipleSelect = (filters) => {
 
     // set attributes
+    console.log(filters);
     setAttributes(filters.data);
+    storeRateOptions = Object.keys(filters.data.rates);
+    rate = storeRateOptions[0];
 
     var dropdownLabels = filters.data.attributes;
+    
+    
 
     // console.log("dropdownLabels: " + dropdownLabels);
     // console.log(attributes + " is attributes in createMultipleSelect");
@@ -72,13 +79,10 @@ function App() {
       filterMasterList.set(filter, curFilterDict);
 
       return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
-      // <MultipleSelect givenNames={filter.options} label={filter.name} />
-    });
+    });    
 
-    // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
-    
     setDropdownList(dropdownList.concat(newFilterDropdowns));
-    setRateDropdown(<select name="selectAllFilters" id="selectAllFilters">
+    setSplitDropdown(<select name="selectAllFilters" id="selectAllFilters">
     {Object.keys(filters.data.attributes).map((i) => {
                   return(<option value={i}>{i}</option>);
             })} </select>)
@@ -92,10 +96,12 @@ function App() {
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(vals))));
 
-    console.log(filterMap, " is filterMap");
+    // console.log(filterMap, " is filterMap");
 
     setFilterList(filterList.concat(filterMap));
     setCurrFilters(filterMap);
+    console.log(storeRateOptions, " is storeRateOptions");
+    setRateOptions(storeRateOptions);
     var valueArray = [];
       for (let [key, value] of filterMap) {
         for (var val in value) {
@@ -172,14 +178,13 @@ function App() {
      if (! tabList.includes(tabName)){
       if (tabName === "") {
         tabName = "Tab " + (maxIndex + 1);
-
       }
       setTabList(tabList.concat(tabName));
       setCurrChart(newChart);
       setTabIsActive(curIndex);
      }
      else{
-      console.log("Tab name already exists!");
+      alert("Please select a new tab name.");
      }
 
   };
@@ -208,6 +213,7 @@ function App() {
         //set filters list
         setFilterList([]);
         // set current chart as empty list
+        // setRateOptions([]);
         
         setCurrChart([]);
         // set current filters as empty list
@@ -249,6 +255,15 @@ function App() {
 
   };
 
+  const onRateChange = () => {
+    console.log("onRateChange");
+    // rate = e.target.value;
+    rate = document.getElementById("rateDropdown").value;
+    console.log("rate", rate);
+    getAPIData();
+
+  }
+
   // function for formatting print the filter map out nicely
   const printFilterMap = (filterMap) => {
     // console.log("printing filter map", filterMap, curIndex);
@@ -262,6 +277,8 @@ function App() {
     }
     return htmlstr;
   };
+
+  const filterListLen = Object.keys(dropdownList).length;
 
 
   return (<div className="App">
@@ -282,8 +299,19 @@ function App() {
                         return(<option value="i">{i}</option>);
                   })}
         </select> */}
-        {rateDropdown}
-        {dropdownList}
+        {splitDropdown}
+        <Grid container>
+          <Grid item >
+            {dropdownList.slice(0, filterListLen / 3)}
+          </Grid>
+          <Grid item >
+            {dropdownList.slice(filterListLen / 3, 2 * filterListLen / 3)}
+          </Grid>
+          <Grid item >
+            {dropdownList.slice(2 * (filterListLen / 3), filterListLen)}
+          </Grid>
+        </Grid>
+       
       </div>
       <div className="Button-Background" >
         <label for="fname">Graph name:  </label>
@@ -306,15 +334,24 @@ function App() {
     </div>
 
 
-    <div style={{paddingBottom:'100px'}}>
+    <div style={{paddingBottom:'50px'}}>
       <h1>Filters</h1>
       <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
     </div>
 
-    <div style={{paddingBottom:'300px'}}>
+    <div style={{paddingBottom:'50px'}}>
       <h1>Chart</h1>
-      {/* {chartList[curIndex]} */}
-      {/* {chartList[tabSelector()]} */}
+      <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
+        {/* <div dangerouslySetInnerHTML={{ __html: generateRateDropdown()}}/> */}
+        {rateOptions.map(item => {
+          if(item === rate) {
+            return <option value={item} selected>{item}</option>;
+          }
+          else {
+            return <option value={item}>{item}</option>;
+          }
+        })}
+      </select>
       {currChart}
     </div>
 
