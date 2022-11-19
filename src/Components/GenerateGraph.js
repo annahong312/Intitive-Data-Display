@@ -79,11 +79,6 @@ export default function GenerateGraph(props) {
       // width={"30%"}
       // options={{ maintainAspectRatio: false }}
       />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
     </div>
 
   );
