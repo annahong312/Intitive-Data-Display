@@ -21,8 +21,6 @@ import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
 import PropTypes from "prop-types";
 import * as React from "react";
-import { useJsonToCsv } from "react-json-csv";
-// import { UseJsonToCsv } from "./CSV";
 import ConvertToCSV from "./CSV/ConvertToCSV.js";
 
 var curRate = "";
@@ -424,6 +422,7 @@ export default function EnhancedTable(props) {
                         <TableCell align="right">{row.total}</TableCell>
                       </TableRow>
                     );
+                    return null;
                   }
                 })}
               {console.log(TotalRow, " is total row")}
