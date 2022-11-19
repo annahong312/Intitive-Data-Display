@@ -3,11 +3,10 @@ import './App.css';
 import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
 import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js'
-import { useGoogleLogin } from '@react-oauth/google';
 import { GetAttributes, GetData } from './Scripts'
-import { gapi } from 'gapi-script';
+import Login from './Components/Login';
+import ErrorMessage from './Components/ErrorMessage'
 import { Grid } from '@mui/material';
-
 
 var curIndex = -1;
 var maxIndex = -1;
@@ -17,13 +16,6 @@ var storeRateOptions = [];
 var filterDict = {};
 var filterMasterList = new Map();
 var filterIdsToNames = {};
-
-gapi.load('client:auth2', initClient);
-function initClient() {
-  gapi.client.init( {
-    discoveryDocs: ["https://script.googleapis.com/$discovery/rest?version=v1"],
-  });
-}
 
 function App() {
   const [attributes, setAttributes] = useState({});
@@ -40,19 +32,17 @@ function App() {
   const [currFilters, setCurrFilters] = useState([]);
   const [tabIsActive, setTabIsActive] = useState(0);
 
-  const onSuccess = tokenResponse => {
-    console.log(tokenResponse);
-    gapi.client.setToken({
-      access_token: tokenResponse.access_token
-    })
-    GetAttributes(createMultipleSelect);
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const onLogin = () => {
+    GetAttributes(createMultipleSelect, popupError);
   }
 
-  const login = useGoogleLogin({
-    onSuccess: onSuccess,
-    flow: "implicit",
-    scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
-  });
+  const popupError = (msg) => {
+    setErrorMsg(msg);
+    setError(true);
+  }
 
   // TODO: refactor filterdict
   const createMultipleSelect = (filters) => {
@@ -133,7 +123,7 @@ function App() {
       GetData(JSON.stringify({
         filters: valueArray,
         splitColumn: splitColValue,
-      }), onAddBtnClickGraph);
+      }), onAddBtnClickGraph, popupError);
   }
 
   // Map ID's back to Names
@@ -294,11 +284,11 @@ function App() {
   return (<div className="App">
     {/* <header className="App-header"> </header> */}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-      <button onClick={() => login()}>
-        Sign in with Google{' '}
-      </button>
+      
+    <Login onLogin={onLogin}/>
+    <ErrorMessage open={error} setOpen={setError} errorMsg={errorMsg}/>
+      
     <div className="background" >
-      {/* <button className="mainButton" type="button">Admin</button> */}
       <h1>Center for Engineering Diversity Data Display Tool</h1>
 
       <div className="Checkbox-Background">
