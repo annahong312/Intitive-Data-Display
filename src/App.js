@@ -36,12 +36,8 @@ function App() {
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
   const [dropdownList, setDropdownList] = useState([]);
-  const [dropdownList2, setDropdownList2] = useState([]);
-  const [dropdownList3, setDropdownList3] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
-
-
   const [tabIsActive, setTabIsActive] = useState(0);
 
   const onSuccess = tokenResponse => {
@@ -65,6 +61,7 @@ function App() {
     console.log(filters);
     setAttributes(filters.data);
     storeRateOptions = Object.keys(filters.data.rates);
+    rate = storeRateOptions[0];
 
     var dropdownLabels = filters.data.attributes;
     
@@ -267,22 +264,6 @@ function App() {
     }
 
   };
-
-  const generateRateDropdown = () => {
-    // var htmlStr = "<select name=\"rateDropdown\" id=\"rateDropdown\"  onChange=\"" + {onRateChange} + "\">";
-    var htmlStr = "";
-    // console.log("rateDropdown", rateOptions);
-    for (var i = 0; i < rateOptions.length; i++) {
-      if(rateOptions[i] === rate) {
-        htmlStr += "<option value=\"" + rateOptions[i] + "\" selected>" + rateOptions[i] + "</option>";
-      }
-      else {
-        htmlStr += "<option value=\"" + rateOptions[i] + "\">" + rateOptions[i] + "</option>";
-      }
-    }
-    // htmlStr += "</select>";
-    return htmlStr;
-  }
 
   const onRateChange = () => {
     console.log("onRateChange");
