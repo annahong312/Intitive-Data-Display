@@ -52,7 +52,7 @@ function GetData(props) {
       // filterName = Object.keys(props.filterDict).find(filterKey => props.filterDict[filterKey] === parseInt(key));
       filterName = props.filterDict[key];
     }
-
+ 
     returnData.push({
       label: filterName,
       data: value.rates[props.rate],
@@ -61,8 +61,6 @@ function GetData(props) {
       borderWidth: 1,
     });
     index = index + 1;
-
-    console.log("making graph " + filterName + " " +  value.rates[props.rate]);
 
   }
   return returnData;
