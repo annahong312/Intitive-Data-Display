@@ -65,6 +65,12 @@ function createHeadCells(labels) {
       label: "Filter",
     },
   ];
+  headCells.push({
+    id: "totalStudents",
+    numeric: true,
+    disablePadding: false,
+    label: "Total Students",
+  });
   // add rest of the labels to headCells
   labels.forEach((label) => {
     headCells.push({
@@ -74,12 +80,7 @@ function createHeadCells(labels) {
       label,
     });
   });
-  headCells.push({
-    id: "total",
-    numeric: true,
-    disablePadding: false,
-    label: "Total",
-  });
+  
   return headCells;
   // return labels.map((label) => ({
   //   id: label,
@@ -218,7 +219,8 @@ export default function EnhancedTable(props) {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [usePercentage, setUsePercentage] = React.useState(false);
 
   // define the data values for rows
   // console.log(props.data);
@@ -320,6 +322,10 @@ export default function EnhancedTable(props) {
     setDense(event.target.checked);
   };
 
+  const handleChangePercentage = (event) => {
+    setUsePercentage(event.target.checked);
+  };
+
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -382,10 +388,10 @@ export default function EnhancedTable(props) {
                         >
                           {row.name}
                         </TableCell>
-                        {attributes.map((i) => {
-                          return <TableCell align="right">{row[i]}</TableCell>;
-                        })}
                         <TableCell align="right">{row.total}</TableCell>
+                        {attributes.map((i) => {
+                          return <TableCell align="right">{usePercentage ? ((row[i] / row.total) * 100).toFixed(0) + "%"  : row[i]}</TableCell>;
+                        })}
                       </TableRow>
                     );
                   } else {
@@ -452,6 +458,10 @@ export default function EnhancedTable(props) {
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
+      />
+      <FormControlLabel
+        control={<Switch checked={usePercentage} onChange={handleChangePercentage} />}
+        label="Percentages"
       />
       {/* <button onClick={saveAsCsv({rows, attributes, filename})}> 
       useJsonToCsv

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import './App.css';
 import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
@@ -34,6 +34,10 @@ function App() {
 
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const scrollTo = useRef(null);
+  const executeScroll = () => scrollTo.current.scrollIntoView();
+
 
   const onLogin = () => {
     GetAttributes(createMultipleSelect, popupError);
@@ -186,7 +190,7 @@ function App() {
      else{
       alert("Please select a new tab name.");
      }
-
+     setTimeout(executeScroll, 1000);
   };
 
   // make a function for clicking tab event
@@ -321,48 +325,48 @@ function App() {
       </div>
     </div>
 
+  {(curIndex < 0) ? (<div></div>) :
+    (<div ref={scrollTo}>
+      <div>
+        {tabList && tabList.map((tab, index) => (
+          <span>
+            <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
+              <span>{tab}</span> 
+              <button style={{marginTop: 1, float: "right"}} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
+            </button> 
+          </span> ))}
+      </div>
 
-    {/* Map out tabs: if the current tab is being mapped, change the highlight*/}
-    <div>
-      {tabList && tabList.map((tab, index) => (
-        <span>
-          <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
-            <span>{tab}</span> 
-            <button style={{marginTop: 1, float: "right"}} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
-          </button> 
-        </span> ))}
-    </div>
 
+      <div style={{paddingBottom:'50px'}}>
+        <h1>Filters</h1>
+        <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
+      </div>
 
-    <div style={{paddingBottom:'50px'}}>
-      <h1>Filters</h1>
-      <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
-    </div>
+      <div style={{paddingBottom:'50px'}}>
+        <h1>Chart</h1>
+        <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
+          {/* <div dangerouslySetInnerHTML={{ __html: generateRateDropdown()}}/> */}
+          {rateOptions.map(item => {
+            if(item === rate) {
+              return <option value={item} selected>{item}</option>;
+            }
+            else {
+              return <option value={item}>{item}</option>;
+            }
+          })}
+        </select>
+        {currChart}
+      </div>
 
-    <div style={{paddingBottom:'50px'}}>
-      <h1>Chart</h1>
-      <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
-        {/* <div dangerouslySetInnerHTML={{ __html: generateRateDropdown()}}/> */}
-        {rateOptions.map(item => {
-          if(item === rate) {
-            return <option value={item} selected>{item}</option>;
-          }
-          else {
-            return <option value={item}>{item}</option>;
-          }
-        })}
-      </select>
-      {currChart}
-    </div>
-
-    
-    <div className="background">
-      <h1>Graph</h1>
-      {graphList[curIndex]}
-    </div>
+      
+      <div className="background">
+        <h1>Graph</h1>
+        {graphList[curIndex]}
+      </div>
+    </div>)}
   </div>
   );
 }
-
 
 export default App;
