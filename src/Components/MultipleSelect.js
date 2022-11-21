@@ -30,7 +30,7 @@ function getStyles(name, personName, theme) {
 }
 
 var usedNameVals = new Map();
-var allNamesSet = false;
+// var allNamesSet = false;
 
 
 function nameValUpdate(curNameVals, label) {
