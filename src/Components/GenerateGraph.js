@@ -45,7 +45,7 @@ function GetData(props) {
       filterName = "Total";
 
       // Remove the first element of Total array to match chart
-      if (value.rates[props.rate].length != 0) {
+      if (value.rates[props.rate].length !== 0) {
         // value.rates[props.rate].shift();
       }
     } else {
