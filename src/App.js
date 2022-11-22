@@ -11,9 +11,11 @@ var curIndex = -1;
 var maxIndex = -1;
 var rate = "Enrollment Rate";
 
-var filterDict = {};
+// var filterDict = {};
 var filterMasterList = new Map();
+var filterMasterListIds = new Map();
 var filterIdsToNames = {};
+var extractedParams = [];
 
 gapi.load('client:auth2', initClient);
 function initClient() {
@@ -34,8 +36,77 @@ function App() {
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
 
+  const [valArray, setValArray] = useState([]);
+    // Map ID's back to Names
+  // build tab list
+  const [tabList, setTabList] = useState([]);
+
 
   const [tabIsActive, setTabIsActive] = useState(0);
+
+  const parseParams = (params) => {
+    console.log(params);
+    var rawParams = params.split("&");
+    console.log(rawParams);
+    // var extractedParams = {};
+    // var count = 0;
+    rawParams.forEach((item) => {
+      item = item.split("=");
+      if(item !== undefined && item.length > 1) {
+        extractedParams.push(parseInt(item[1])); //item[0]
+      }
+      // count++;
+    });
+    //start
+    console.log(extractedParams);
+    console.log(JSON.stringify(filterIdsToNames));
+    console.log(filterMasterListIds);
+
+    // take extractedParams and get names of filters based on ids
+    var nameVals = new Map();
+    for (var idx = 0; idx < extractedParams.length; idx++) {
+      console.log(extractedParams[idx]);
+      var name = filterIdsToNames[extractedParams[idx]];
+      // var testName = filterIdsToNames[]
+      console.log(name + " is cur name");
+      // get the name of the filter from the id
+      var filter = null;
+      // for(var [key, value] of filterMasterListIds) {
+      //  console.log(key + " is key testing");
+      // }
+      for (let [key, value] of filterMasterListIds.entries()) {
+        console.log(key + " is key " + value + " is value for masterListIds");
+        for (var i = 0; i < value.length; i++) {
+          console.log(value[i] + " is value at i");
+          if (value[i] === extractedParams[idx]) {
+            filter = key;
+            console.log(filter + " " + name + " is found for id " + extractedParams[idx]);
+            break;
+          }
+        }
+        if(filter !== null) {
+          break;
+        }
+      }
+
+      // add filter to nameVals with the name of the filter and the value of the filter
+      if(nameVals.has(filter)) {
+        var temp = nameVals.get(filter);
+        temp.push(name);
+        nameVals.set(filter, temp);
+      } else {
+        nameVals.set(filter, [name]);
+      }
+
+      console.log(name + " " + filter);
+      
+    }
+    console.log(nameVals);
+
+    getAPIData(nameVals);
+    //end
+
+  };
 
   const onSuccess = tokenResponse => {
     console.log(tokenResponse);
@@ -51,6 +122,46 @@ function App() {
     flow: "implicit",
     scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/script.scriptapp",
   });
+
+  const copyLink = (currFilters) => {
+    var url = "https://intuitive-data-display.netlify.app?";
+    for(var i=0; i<valArray.length; i++){
+      url += "id=";
+      url += valArray[i];
+      url += "&";
+    }
+    return url;
+  };
+
+  /*
+  const displayParamsFromURL = () => {
+    if(extractedParams.length > 0){
+      // set CurrFilters to extractedParams through printFilterMap
+      // setCurrFilters(extractedParams);
+      // call createGraph
+      
+      getAPIData(extractedParams);
+
+
+      var tempMap = new Map();
+
+      for (var val in extractedParams) {
+        var curName = filterIdsToNames[val];
+        console.log(curName);
+        console.log(filterMasterList + " is in filtermasterlist");
+        console.log(filterMasterList);
+        tempMap.set(curName, val);
+      }
+
+      console.log(tempMap);
+      // console.log(filterMasterList);
+
+      printFilterMap(tempMap);
+
+     
+    } 
+
+  };*/
 
   // TODO: refactor filterdict
   const createMultipleSelect = (filters) => {
@@ -70,19 +181,25 @@ function App() {
       // map keys with filter
       // Stayed in Viterbi (key), filterDict (val) => Y:0, N:1
       var curFilterDict = {}
+      var curFilterDictIds = []
 
       var keys = Object.keys(dropdownLabels[filter]);
       var values = Object.values(dropdownLabels[filter]);
       for (var i = 0; i < keys.length; i++) {
         curFilterDict[keys[i]] = values[i];
-        filterDict[keys[i]] = values[i]; //TODO remove
+        curFilterDictIds.push(values[i]);
+        // filterDict[keys[i]] = values[i]; //TODO remove
         filterIdsToNames[values[i]] = keys[i];
-        // console.log(keys[i], values[i], " are keys and values");
+        // console.log(keys[i], values[i], " are keys and values of filterIds");
       }
       filterMasterList.set(filter, curFilterDict);
+      filterMasterListIds.set(filter, curFilterDictIds);
+
+      // displayParamsFromURL();
 
       return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
       // <MultipleSelect givenNames={filter.options} label={filter.name} />
+
     });
 
     // var newFilterDropdowns = [<MultipleSelect  givenNames={namesGender} label="Gender" />, <MultipleSelect  givenNames={namesMajors} label="Major" />];
@@ -92,15 +209,30 @@ function App() {
     {Object.keys(filters.data.attributes).map((i) => {
                   return(<option value={i}>{i}</option>);
             })} </select>)
+            
+    var url = window.location.href;
+    if (url.includes("?")){
+      var params = url.split("?");
+      parseParams(params[1]); 
+    }
   };
 
 
   // Called on Generate Chart
   // function to return data from API call
-  const getAPIData = () => {
-    var vals = getUpdatedNameVals();
-    var filterMap = new Map(JSON.parse(
-      JSON.stringify(Array.from(vals))));
+  const getAPIData = (curVals) => {
+    var filterMap= curVals;
+
+    console.log(filterMap + " is vals in getAPIData");
+    if(curVals === null){ //TODO test
+      console.log("curVals is null");
+      var vals = getUpdatedNameVals();
+      filterMap = new Map(JSON.parse(
+        JSON.stringify(Array.from(vals))));
+    }
+    
+    // var filterMap = new Map(JSON.parse(
+    //   JSON.stringify(Array.from(vals))));
 
     console.log(filterMap, " is filterMap");
 
@@ -114,11 +246,12 @@ function App() {
           console.log(filterMasterList.get(key), " is filterMasterList.get(key)");
           console.log(filterMasterList.get(key)[value[val]], "is value[val]");
           // valueArray.push(filterDict[value[val]]);
-          console.log(filterDict[value[val]], "is filterDict value[val]");
+          // console.log(filterDict[value[val]], "is filterDict value[val]");
         }
 
       }
       console.log(valueArray);
+      setValArray(valueArray);
 
       var e = document.getElementById("selectAllFilters");
       var splitColValue = e.value;
@@ -129,10 +262,7 @@ function App() {
         splitColumn: splitColValue,
       }), onAddBtnClickGraph);
   }
-
-  // Map ID's back to Names
-  // build tab list
-  const [tabList, setTabList] = useState([]);
+  
   const onAddBtnClickGraph = (data) => {
     // process data into a list
     var dataRows = []
@@ -321,7 +451,13 @@ function App() {
       <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
     </div>
 
-    <div style={{paddingBottom:'300px'}}>
+    <div>
+      <button onClick={() => navigator.clipboard.writeText(copyLink(currFilters))}>
+        Copy Link to Clipboard
+      </button>
+    </div>
+
+    <div style={{paddingBottom:'200px'}}>
       <h1>Chart</h1>
       {/* {chartList[curIndex]} */}
       {/* {chartList[tabSelector()]} */}
