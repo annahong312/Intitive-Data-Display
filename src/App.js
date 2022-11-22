@@ -11,11 +11,12 @@ var curIndex = -1;
 var maxIndex = -1;
 var rate = "Enrollment Rate";
 
-// var filterDict = {};
+var paramsInURL = false;
 var filterMasterList = new Map();
 var filterMasterListIds = new Map();
 var filterIdsToNames = {};
 var extractedParams = [];
+var attributeRates;
 
 gapi.load('client:auth2', initClient);
 function initClient() {
@@ -168,6 +169,9 @@ function App() {
 
     // set attributes
     setAttributes(filters.data);
+    attributeRates = filters.data;
+    console.log(filters.data);
+    console.log("end filter attributes");
 
     var dropdownLabels = filters.data.attributes;
 
@@ -175,7 +179,6 @@ function App() {
     // console.log(attributes + " is attributes in createMultipleSelect");
     
     // Mapping filters to names 
-    // Todo: check this for broken attributes asdf
     // Filter = string name, need to map to a separate map
     var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
       // map keys with filter
@@ -212,6 +215,7 @@ function App() {
             
     var url = window.location.href;
     if (url.includes("?")){
+      paramsInURL = true;
       var params = url.split("?");
       parseParams(params[1]); 
     }
@@ -224,7 +228,7 @@ function App() {
     var filterMap = curVals;
 
     console.log(filterMap + " is vals in getAPIData");
-    if(curVals === null){ 
+    if(!paramsInURL){ 
       console.log("curVals is null");
       var vals = getUpdatedNameVals();
       filterMap = new Map(JSON.parse(
@@ -254,7 +258,12 @@ function App() {
       setValArray(valueArray);
 
       var e = document.getElementById("selectAllFilters");
-      var splitColValue = e.value;
+      var splitColValue;
+      if(e == null){
+        splitColValue = "Stayed in Viterbi";
+      } else {
+        splitColValue = e.value;
+      }
       // console.log(splitColValue, "is splitColValue");
       
       GetData(JSON.stringify({
@@ -276,13 +285,24 @@ function App() {
         filterName = filterIdsToNames[key];
       }
       var dataRates = value.rates[rate];
+      console.log(dataRates, " is dataRates");
+      console.log(data)
 
       var dataRow = {
         name: filterName,
         total: value.count
       }
       for(let i = 0; i < dataRates.length; i++) {
-        dataRow[attributes.rates[rate][i]] = dataRates[i];
+        console.log(dataRates[i], " is dataRates[i] " + rate + " is rate");
+        if(attributes.length > 0) {
+          console.log("not null for attributes");
+          dataRow[attributes.rates[rate][i]] = dataRates[i];
+        }
+        else {
+          console.log(attributeRates);
+          console.log(attributeRates.rates[rate][i]);
+          dataRow[attributeRates.rates[rate][i]] = dataRates[i];
+        }
       }
       dataRows.push(dataRow);
 
@@ -299,8 +319,8 @@ function App() {
     var e = document.getElementById("selectAllFilters");
     var splitColValue = e.value;
 
-    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributes.rates[rate]}/>;
-    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributes.rates[rate]} filterDict={filterIdsToNames}/>;
+    var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributeRates.rates[rate]}/>;
+    var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributeRates.rates[rate]} filterDict={filterIdsToNames}/>;
     setChartList(chartList.concat(newChart));
     setGraphList(graphList.concat(newGraph));
 
