@@ -221,10 +221,10 @@ function App() {
   // Called on Generate Chart
   // function to return data from API call
   const getAPIData = (curVals) => {
-    var filterMap= curVals;
+    var filterMap = curVals;
 
     console.log(filterMap + " is vals in getAPIData");
-    if(curVals === null){ //TODO test
+    if(curVals === null){ 
       console.log("curVals is null");
       var vals = getUpdatedNameVals();
       filterMap = new Map(JSON.parse(
