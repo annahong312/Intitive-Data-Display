@@ -29,17 +29,25 @@ function getStyles(name, personName, theme) {
   };
 }
 
+// Todo: need to find the max length of each filter
+var selectedAll = false;
 var usedNameVals = new Map();
-// var allNamesSet = false;
 
 
-function nameValUpdate(curNameVals, label) {
+function nameValUpdate(curNameVals, label, allNames) {
     if (curNameVals.length < 1) {
       usedNameVals.delete(label);
     } else {
       usedNameVals = usedNameVals.set(label, curNameVals);
     }
     // console.log(usedNameVals + " is usedNameVals for " + label);
+
+    if (curNameVals.length === allNames.length) {
+      selectedAll = true;
+    }
+    else{
+      selectedAll = false;
+    }
 }
 
 export const getUpdatedNameVals = () => {
@@ -54,7 +62,8 @@ export default function MultipleSelect(givenNames) {
 //   console.log(names + " names");
   // console.log(label + " label");
   const theme = useTheme();
-  const [nameVals, setNameVals] = React.useState([]);
+  // const [nameVals, setNameVals] = React.useState([]);
+  const [nameVals, setNameVals] = React.useState(names);
 
   const handleChange = (event) => {
     const {
@@ -65,7 +74,7 @@ export default function MultipleSelect(givenNames) {
       typeof value === 'string' ? value.split(',') : value,
     );
     
-    nameValUpdate(value, label);
+    nameValUpdate(value, label, names);
   };
 
   const onMouseDown=(event) => {
@@ -78,30 +87,21 @@ export default function MultipleSelect(givenNames) {
     // console.log(value);
     setNameVals(nameVals.filter(item => item !== value));
     var newNameVals = nameVals.filter(item => item !== value);
-    nameValUpdate(newNameVals, label);
+    nameValUpdate(newNameVals, label, names);
 
   };
 
   //create a clear all function for the dropdown
   const clearAll = () => {
     setNameVals([]);
-    nameValUpdate([], label);
+    nameValUpdate([], label, names);
   }
 
   //create a select all function for the dropdown
   const selectAll = () => {
     setNameVals(names);
-    nameValUpdate(names, label);
+    nameValUpdate(names, label, names);
   }
-
-  // Set all initially
-  // if (!allNamesSet) {
-  //   setNameVals(names);
-  //   nameValUpdate(names, label);
-  //   allNamesSet = true;
-  //   console.log("set All Names");
-  // }
-  
 
   return (
     <div>
@@ -122,17 +122,17 @@ export default function MultipleSelect(givenNames) {
               input={<OutlinedInput id="select-multiple-chip" label={label}/>} //select-multiple-chip
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.25 }}>
-                  {selected.map((value) => (
-                    <Chip 
-                    key={value}  
-                    label={value}   
-                    onMouseDown={onMouseDown}     
-                    onDelete={() => handleDelete(value)}
-                    // onClick={handleDelete}
-                    onClick={handleChange}
-                    variant="outlined"
-                    />
-                  ))}
+                  {
+                    selected.map((value) => (
+                      <Chip 
+                      key={value}  
+                      label={value}   
+                      onMouseDown={onMouseDown}     
+                      onDelete={() => handleDelete(value)}
+                      // onClick={handleDelete}
+                      variant="outlined"
+                      />
+                    ))}
                 </Box>
               )}
               MenuProps={MenuProps}

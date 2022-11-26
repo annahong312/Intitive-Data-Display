@@ -422,10 +422,11 @@ export default function EnhancedTable(props) {
                         >
                           {row.name}
                         </TableCell>
+                        <TableCell align="right">{row.total}</TableCell>
                         {attributes.map((i) => {
                           return <TableCell align="right">{row[i]}</TableCell>;
                         })}
-                        <TableCell align="right">{row.total}</TableCell>
+                       
                       </TableRow>
                     );
                     return null;
