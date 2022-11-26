@@ -431,7 +431,6 @@ export default function EnhancedTable(props) {
                     return null;
                   }
                 })}
-              {console.log(TotalRow, " is total row")}
               {TotalRow}
               {emptyRows > 0 && (
                 <TableRow

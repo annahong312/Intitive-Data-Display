@@ -1,5 +1,5 @@
 import React from "react";
-import { Line } from 'react-chartjs-2';
+import { Line } from "react-chartjs-2";
 // import { Chart } from 'chart.js/auto'
 import {
   Chart as ChartJS,
@@ -10,7 +10,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -22,38 +22,51 @@ ChartJS.register(
   Legend
 );
 
+const colorList = [
+  "rgba(75,192,192,1)",
+  "#ecf0f1",
+  "#50AF95",
+  "#f3ba2f",
+  "#2a71d0",
+  "#f55656",
+  "#f79131",
+  "#64ed5a",
+  "#072591",
+  "#076600",
+  "#7e33ff",
+];
+
 function GetData(props) {
   let returnData = [];
+  var index = 0;
   for (const [key, value] of Object.entries(props.data)) {
     var filterName;
     if (key === "total") {
       filterName = "Total";
+
+      // Remove the first element of Total array to match chart
+      if (value.rates[props.rate].length !== 0) {
+        // value.rates[props.rate].shift();
+      }
     } else {
       // filterName = Object.keys(props.filterDict).find(filterKey => props.filterDict[filterKey] === parseInt(key));
       filterName = props.filterDict[key];
-      // console.log("filtername is " + filterName);
-      // console.log(props.filterDict);
-      // console.log("End");
     }
+ 
     returnData.push({
       label: filterName,
       data: value.rates[props.rate],
-      backgroundColor: [
-        "rgba(75,192,192,1)",
-        "#ecf0f1",
-        "#50AF95",
-        "#f3ba2f",
-        "#2a71d0",
-      ],
+      backgroundColor: colorList[index % colorList.length],
       borderColor: "black",
-      borderWidth: 2,
-    })
+      borderWidth: 1,
+    });
+    index = index + 1;
+
   }
   return returnData;
 }
 
 export default function GenerateGraph(props) {
-
   return (
     <div>
       {/* <button onClick={() => setData(data)}>Reset</button> */}
@@ -64,23 +77,19 @@ export default function GenerateGraph(props) {
           datasets: GetData(props),
           options: {
             plugins: {
-                title: {
-                    display: true,
-                    text: 'Custom Chart Title',
-                    padding: {
-                        top: 10,
-                        bottom: 30
-                    }
-                }
-            }
-        }
-      }}
+              title: {
+                display: true,
+                text: "Custom Chart Title",
+                padding: {
+                  top: 10,
+                  bottom: 30,
+                },
+              },
+            },
+          },
+        }}
         height={"80px"}
-      // width={"30%"}
-      // options={{ maintainAspectRatio: false }}
       />
     </div>
-
   );
-
 }

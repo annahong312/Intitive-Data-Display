@@ -30,6 +30,7 @@ function getStyles(name, personName, theme) {
 }
 
 var usedNameVals = new Map();
+// var allNamesSet = false;
 
 
 function nameValUpdate(curNameVals, label) {
@@ -92,6 +93,15 @@ export default function MultipleSelect(givenNames) {
     setNameVals(names);
     nameValUpdate(names, label);
   }
+
+  // Set all initially
+  // if (!allNamesSet) {
+  //   setNameVals(names);
+  //   nameValUpdate(names, label);
+  //   allNamesSet = true;
+  //   console.log("set All Names");
+  // }
+  
 
   return (
     <div>
