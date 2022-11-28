@@ -30,7 +30,7 @@ function App() {
   const [dropdownList, setDropdownList] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
-  const [tabIsActive, setTabIsActive] = useState(0);
+  const [tabIsActive, setTabIsActive] = useState(-1);
 
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -230,28 +230,27 @@ function App() {
   const onDeleteTab = (index) => {
     // get the index of the tab
     if (index === 0 && chartList.length === 1) {
-      // useEffect(() => {
-        // set chart as empty list
-        setChartList([]);
-        // set graph as empty list
-        setGraphList([]);
-        // set tab as empty list
-        setTabList([]);
-        //set filters list
-        setFilterList([]);
-        // set current chart as empty list
-        // setRateOptions([]);
-        
-        setCurrChart([]);
-        // set current filters as empty list
-        setCurrFilters([]);
-        // set current index as -1
-      // });
+
+      // set chart as empty list
+      setChartList([]);
+      // set graph as empty list
+      setGraphList([]);
+      // set tab as empty list
+      setTabList([]);
+      //set filters list
+      setFilterList([]);
+      // set current chart as empty list
+      // setRateOptions([]);
+      
+      setCurrChart([]);
+      // set current filters as empty list
+      setCurrFilters([]);
+      // set current index as -1
 
       curIndex = -1;
       // set max index as -1
       maxIndex = -1;
-
+      setTabIsActive(-1);
     } else {
       // remove the tab from the tab list
       var toRemove = tabList[index];
@@ -259,14 +258,16 @@ function App() {
       // tabList.splice(index, 1);
       // remove the chart from the chart list
       var toRemoveChart = chartList[index];
-      setChartList(chartList.filter(item => item !== toRemoveChart));
+      var newChartList = chartList.filter(item => item !== toRemoveChart);
+      setChartList(newChartList);
       // remove the graph from the graph list
       var toRemoveGraph = graphList[index];
       setGraphList(graphList.filter(item => item !== toRemoveGraph));
       
       // set filter list
       var toRemoveFilter = filterList[index];
-      setFilterList(filterList.filter(item => item !== toRemoveFilter));     
+      var newFilterList = filterList.filter(item => item !== toRemoveFilter);
+      setFilterList(newFilterList);     
       
       if (index === curIndex && index === 0) {
         // curIndex++;
@@ -274,12 +275,9 @@ function App() {
       } else {
         curIndex--;
       }
-      maxIndex = chartList.length;
-
-      setCurrChart(chartList[curIndex]);
-      setCurrFilters(filterList[curIndex]);
+      setCurrChart(newChartList[curIndex]);
+      setCurrFilters(newFilterList[curIndex]);
     }
-
   };
 
   const onRateChange = () => {
@@ -352,20 +350,20 @@ function App() {
       </div>
     </div>
 
-  {(curIndex < 0) ? (<div></div>) :
+    
+    <div>
+      {tabList && tabList.map((tab, index) => (
+        <span>
+          <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
+            <span>{tab}</span> 
+            <button style={{marginTop: 1, float: "right"}} className="btn" onClick={(e) => {e.stopPropagation(); onDeleteTab(index,e)}}><i className="fa fa-trash"></i></button>
+          </button> 
+        </span> ))}
+    </div>
+
+  {(tabIsActive < 0) ? (<div></div>) :
     (<div ref={scrollTo}>
-      <div>
-        {tabList && tabList.map((tab, index) => (
-          <span>
-            <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
-              <span>{tab}</span> 
-              <button style={{marginTop: 1, float: "right"}} className="btn" onClick={() => onDeleteTab(index)}><i className="fa fa-trash"></i></button>
-            </button> 
-          </span> ))}
-      </div>
-
-
-      <div style={{paddingBottom:'50px'}}>
+    <div style={{paddingBottom:'50px'}}>
         <h1>Filters</h1>
         <div dangerouslySetInnerHTML={{ __html: printFilterMap(currFilters)}} />
       </div>
