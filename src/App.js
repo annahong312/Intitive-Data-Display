@@ -10,6 +10,7 @@ import { gapi } from 'gapi-script';
 var curIndex = -1;
 var maxIndex = -1;
 var rate = "Enrollment Rate";
+var splitColFromURL = "";
 
 var paramsInURL = false;
 var filterMasterList = new Map();
@@ -28,6 +29,7 @@ function initClient() {
 function App() {
   const [attributes, setAttributes] = useState({});
   const [rateDropdown, setRateDropdown] = useState([]);
+  const [splitColList, setSplitColList] = useState([]);
 
   const [chartList, setChartList] = useState([]);
 
@@ -47,17 +49,24 @@ function App() {
 
   const parseParams = (params) => {
     console.log(params);
-    var rawParams = params.split("&");
+    var allParams = params.split("filter=");
+    console.log(allParams +  " is all params");
+    var rawParams = allParams[0].split("&");
     console.log(rawParams);
     // var extractedParams = {};
     // var count = 0;
+    var splits = rawParams[0].replace("id=", "");
+    rawParams[0] = splits[0];
     rawParams.forEach((item) => {
-      item = item.split("=");
+      //item = item.split("=");
       if(item !== undefined && item.length > 1) {
         extractedParams.push(parseInt(item[1])); //item[0]
       }
       // count++;
     });
+    console.log(allParams[1] + " is allParams1 ");
+    splitColFromURL = decodeURIComponent(allParams[1]);
+    console.log(splitColFromURL + " is splitColFromURL");
     //start
     console.log(extractedParams);
     console.log(JSON.stringify(filterIdsToNames));
@@ -126,11 +135,13 @@ function App() {
 
   const copyLink = (currFilters) => {
     var url = "https://intuitive-data-display.netlify.app?";
+    url += "id=";
     for(var i=0; i<valArray.length; i++){
-      url += "id=";
       url += valArray[i];
       url += "&";
     }
+    url += "filter=" + encodeURIComponent(splitColList[curIndex]);
+    console.log(url);
     return url;
   };
 
@@ -181,8 +192,7 @@ function App() {
     // Mapping filters to names 
     // Filter = string name, need to map to a separate map
     var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
-      // map keys with filter
-      // Stayed in Viterbi (key), filterDict (val) => Y:0, N:1
+
       var curFilterDict = {}
       var curFilterDictIds = []
 
@@ -260,9 +270,10 @@ function App() {
       var e = document.getElementById("selectAllFilters");
       var splitColValue;
       if(e == null){
-        splitColValue = "Stayed in Viterbi";
+        splitColValue = splitColFromURL;
       } else {
         splitColValue = e.value;
+        
       }
       // console.log(splitColValue, "is splitColValue");
       
@@ -318,6 +329,7 @@ function App() {
 
     var e = document.getElementById("selectAllFilters");
     var splitColValue = e.value;
+    setSplitColList(splitColList.concat(splitColValue));
 
     var newChart = <GenerateChartMUI index={maxIndex} data={dataRows} rate={splitColValue} attributes={attributeRates.rates[rate]}/>;
     var newGraph = <GenerateGraph index={maxIndex} data={data.data} rate={rate} attributes={attributeRates.rates[rate]} filterDict={filterIdsToNames}/>;
