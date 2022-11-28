@@ -27,3 +27,6 @@ yarn-error.log*
 
 # ignore env
 .env
+
+# Old directory
+/reactfirst
