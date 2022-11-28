@@ -252,7 +252,7 @@ export default function EnhancedTable(props) {
     e.preventDefault();
 
     // Headers for each column
-    let headers = ["name"];
+    let headers = ["name", "total"];
     for (let i = 0; i < attributes.length; i++) {
       headers.push(attributes[i]);
     }

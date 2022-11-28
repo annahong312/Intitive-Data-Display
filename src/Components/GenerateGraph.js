@@ -88,7 +88,7 @@ export default function GenerateGraph(props) {
             },
           },
         }}
-        height={"80px"}
+        height={"150px"}
       />
     </div>
   );

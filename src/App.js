@@ -96,29 +96,33 @@ function App() {
   // Called on Generate Chart
   // function to return data from API call
   const getAPIData = () => {
-    var vals = getUpdatedNameVals();
-    var filterMap = new Map(JSON.parse(
+    var vals = getUpdatedNameVals(); 
+
+    var invertedVals = invertDropdownData(vals);
+
+    var selectedFilterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(vals))));
+
+    var filterMap = new Map(JSON.parse(
+      JSON.stringify(Array.from(invertedVals))));
 
     // console.log(filterMap, " is filterMap");
 
-    setFilterList(filterList.concat(filterMap));
-    setCurrFilters(filterMap);
-    console.log(storeRateOptions, " is storeRateOptions");
+    setFilterList(filterList.concat(selectedFilterMap));
+    setCurrFilters(selectedFilterMap);
+    // console.log(storeRateOptions, " is storeRateOptions");
     setRateOptions(storeRateOptions);
     var valueArray = [];
       for (let [key, value] of filterMap) {
         for (var val in value) {
           console.log(value[val], " is value[val]", " and key is ", key, " and value is ", value);
           valueArray.push(filterMasterList.get(key)[value[val]]);
-          console.log(filterMasterList.get(key), " is filterMasterList.get(key)");
-          console.log(filterMasterList.get(key)[value[val]], "is value[val]");
-          // valueArray.push(filterDict[value[val]]);
-          console.log(filterDict[value[val]], "is filterDict value[val]");
+          // console.log(filterMasterList.get(key), " is filterMasterList.get(key)");
+          // console.log(filterMasterList.get(key)[value[val]], "is value[val]");
         }
 
       }
-      console.log(valueArray);
+      // console.log(valueArray);
 
       var e = document.getElementById("selectAllFilters");
       var splitColValue = e.value;
@@ -193,12 +197,31 @@ function App() {
      setTimeout(executeScroll, 1000);
   };
 
+  const invertDropdownData = (filterMap) => {
+    var newUsedNameVals = new Map(); //if filtermap under the gender key contains male, add female/non-binary to newFilterMap
+    for (let [key, value] of filterMap) { //this should mimic mulitpleSelect return map of lists 
+      var selectedItems = []; //
+      for(var val in filterMasterList.get(key)) {
+            // if val is in filterMasterList but not in filterMap/,newUsedNameVals 
+            //add it to newFilterMap
+        if (! (value.includes(val))){
+          selectedItems.push(val);
+        }
+          
+      }
+      newUsedNameVals.set(key, selectedItems);
+      // console.log(newUsedNameVals);
+      // console.log("end newUsedNameVals");
+    }
+    return newUsedNameVals;
+  };
+
   // make a function for clicking tab event
   const onTabClick = (index) => {
 
     curIndex = index;
     setCurrChart(chartList[curIndex]);
-    console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
+    // console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
     setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
   };
@@ -260,10 +283,9 @@ function App() {
   };
 
   const onRateChange = () => {
-    console.log("onRateChange");
     // rate = e.target.value;
     rate = document.getElementById("rateDropdown").value;
-    console.log("rate", rate);
+    // console.log("rate", rate);
     getAPIData();
 
   }
@@ -296,7 +318,7 @@ function App() {
       <h1>Center for Engineering Diversity Data Display Tool</h1>
 
       <div className="Checkbox-Background">
-        <p>Filter Options</p>
+        <h1>Filter Options</h1>
         <label for="selectAllFilters">Choose a filter to sort by: </label>
         {/* <select name="selectAllFilters" id="selectAllFilters">
           {Object.keys(attributes.attributes).map((i) => {
@@ -304,7 +326,12 @@ function App() {
                   })}
         </select> */}
         {splitDropdown}
-        <Grid container>
+        <Grid 
+          container 
+          className="dropdown-container"
+          alignItems="center"
+          justifyContent="center"
+        >
           <Grid item >
             {dropdownList.slice(0, filterListLen / 3)}
           </Grid>
