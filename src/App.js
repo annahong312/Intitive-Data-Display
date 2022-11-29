@@ -235,18 +235,17 @@ function App() {
     // console.log(storeRateOptions, " is storeRateOptions");
     setRateOptions(storeRateOptions);
     var valueIds = {}
+    var valueArray = []
       for (let [key, value] of selectedFilterMap) {
         // console.log(key + " is key " + value + " is value");
         for (var val in value) {
-          console.log(value[val], " is value[val]", " and key is ", key, " and value is ", value);
+          valueArray.push(filterMasterList.get(key)[value[val]]);
           valueIds[filterMasterList.get(key)[value[val]]] = value[val];
 
         }
 
       }
       setUrlIds(urlIds.concat(valueIds));
-      console.log(urlIds + " is valueArray" + valueArray + " is valueArray 2");
-
 
       var e = document.getElementById("selectAllFilters");
       var splitColValue;
@@ -298,8 +297,6 @@ function App() {
       dataRows.push(dataRow);
 
     }
-
-    console.log(urlIds + " is valArray in addBtnClickGraph");
 
     // console.log(data.data + " is data in onAddBtnClickGraph");
 
@@ -385,7 +382,7 @@ function App() {
       setCurrChart([]);
       // set current filters as empty list
       setCurrFilters([]);
-      // set current index as -1
+      setUrlIds([]);
 
       curIndex = -1;
       // set max index as -1
@@ -408,6 +405,10 @@ function App() {
       var toRemoveFilter = filterList[index];
       var newFilterList = filterList.filter(item => item !== toRemoveFilter);
       setFilterList(newFilterList);     
+
+      var toRemoveUrlIds = urlIds[index];
+      var newUrlIds = urlIds.filter(item => item !== toRemoveUrlIds);
+      setUrlIds(newUrlIds);
       
       if (index === curIndex && index === 0) {
         // curIndex++;
