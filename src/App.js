@@ -39,7 +39,7 @@ function App() {
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const [valArray, setValArray] = useState([]);
+  const [urlIds, setUrlIds] = useState([]);
     // Map ID's back to Names
   // build tab list
   const [tabList, setTabList] = useState([]);
@@ -128,13 +128,17 @@ function App() {
     setError(true);
   }
 
-  const copyLink = (currFilters) => {
+  const copyLink = () => {
     var url = "https://intuitive-data-display.netlify.app?";
-    if(valArray.length !== 0) {
+    var curValArray = urlIds[curIndex];
+    console.log(curValArray);
+    console.log("end val arr");
+    if(Object.keys(curValArray).length > 0) {
+      console.log(Object.keys(curValArray).length + " is length");
       url += "id=";
     }
-    for(var i=0; i<valArray.length; i++){
-      url += valArray[i];
+    for(const [key] of Object.entries(curValArray)) {
+      url += key;
       url += ",";
     }
     url += "&filter=" + encodeURIComponent(splitColList[curIndex]);
@@ -224,22 +228,24 @@ function App() {
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(invertedVals))));
 
-    // console.log(filterMap, " is filterMap");
+    console.log(filterMap, " is filterMap");
 
     setFilterList(filterList.concat(selectedFilterMap));
     setCurrFilters(selectedFilterMap);
     // console.log(storeRateOptions, " is storeRateOptions");
     setRateOptions(storeRateOptions);
-    var valueArray = [];
-      for (let [key, value] of filterMap) {
+    var valueIds = {}
+      for (let [key, value] of selectedFilterMap) {
+        // console.log(key + " is key " + value + " is value");
         for (var val in value) {
           console.log(value[val], " is value[val]", " and key is ", key, " and value is ", value);
-          valueArray.push(filterMasterList.get(key)[value[val]]);
+          valueIds[filterMasterList.get(key)[value[val]]] = value[val];
 
         }
 
       }
-      setValArray(valueArray);
+      setUrlIds(urlIds.concat(valueIds));
+      console.log(urlIds + " is valueArray" + valueArray + " is valueArray 2");
 
 
       var e = document.getElementById("selectAllFilters");
@@ -250,7 +256,6 @@ function App() {
         splitColValue = e.value;
         
       }
-      console.log(valueArray, "is valueArray");
       
       GetData(JSON.stringify({
         filters: valueArray,
@@ -271,7 +276,7 @@ function App() {
         filterName = filterIdsToNames[key];
       }
       var dataRates = value.rates[rate];
-      console.log(dataRates, " is dataRates");
+      // console.log(dataRates, " is dataRates");
       console.log(data)
 
       var dataRow = {
@@ -279,20 +284,22 @@ function App() {
         total: value.count
       }
       for(let i = 0; i < dataRates.length; i++) {
-        console.log(dataRates[i], " is dataRates[i] " + rate + " is rate");
+        // console.log(dataRates[i], " is dataRates[i] " + rate + " is rate");
         if(attributes.length > 0) {
-          console.log("not null for attributes");
+          // console.log("not null for attributes");
           dataRow[attributes.rates[rate][i]] = dataRates[i];
         }
         else {
-          console.log(attributeRates);
-          console.log(attributeRates.rates[rate][i]);
+          // console.log(attributeRates);
+          // console.log(attributeRates.rates[rate][i]);
           dataRow[attributeRates.rates[rate][i]] = dataRates[i];
         }
       }
       dataRows.push(dataRow);
 
     }
+
+    console.log(urlIds + " is valArray in addBtnClickGraph");
 
     // console.log(data.data + " is data in onAddBtnClickGraph");
 
@@ -504,7 +511,7 @@ function App() {
       </div>
 
     <div>
-      <button onClick={() => navigator.clipboard.writeText(copyLink(currFilters))}>
+      <button onClick={() => navigator.clipboard.writeText(copyLink())}>
         Copy Link to Clipboard
       </button>
       
