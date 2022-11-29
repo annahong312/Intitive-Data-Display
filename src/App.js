@@ -38,7 +38,6 @@ function App() {
 
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [dataOnly, setDataOnly] = useState(true);
 
   const [valArray, setValArray] = useState([]);
     // Map ID's back to Names
@@ -197,9 +196,6 @@ function App() {
       paramsInURL = true;
       var params = url.split("?");
       parseParams(params[1]); 
-    }
-    else {
-      setDataOnly(false);
     }
   };
 
@@ -452,7 +448,7 @@ function App() {
     <div className="background" >
       <h1>Center for Engineering Diversity Data Display Tool</h1>
 
-      <div className={dataOnly ? 'hidden' : undefined}>
+      <div className={paramsInURL ? 'hidden' : undefined}>
         <div className="Checkbox-Background">
           <h1>Filter Options</h1>
           <label for="selectAllFilters">Choose a filter to sort by: </label>
@@ -492,7 +488,7 @@ function App() {
     
     <div>
       {tabList && tabList.map((tab, index) => (
-        <span className={dataOnly ? 'hidden' : undefined}>
+        <span className={paramsInURL ? 'hidden' : undefined}>
           <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
             <span>{tab}</span> 
             <button style={{marginTop: 1, float: "right"}} className="btn" onClick={(e) => {e.stopPropagation(); onDeleteTab(index,e)}}><i className="fa fa-trash"></i></button>
@@ -515,7 +511,7 @@ function App() {
     </div>
       <div style={{paddingBottom:'50px'}}>
         <h1>Chart</h1>
-        <div className={dataOnly ? 'hidden' : undefined}>
+        <div className={paramsInURL ? 'hidden' : undefined}>
           <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
             {rateOptions.map(item => {
               if(item === rate) {
