@@ -38,6 +38,7 @@ function App() {
 
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [dataOnly, setDataOnly] = useState(true);
 
   const [valArray, setValArray] = useState([]);
     // Map ID's back to Names
@@ -142,36 +143,6 @@ function App() {
     return url;
   };
 
-  /*
-  const displayParamsFromURL = () => {
-    if(extractedParams.length > 0){
-      // set CurrFilters to extractedParams through printFilterMap
-      // setCurrFilters(extractedParams);
-      // call createGraph
-      
-      getAPIData(extractedParams);
-
-
-      var tempMap = new Map();
-
-      for (var val in extractedParams) {
-        var curName = filterIdsToNames[val];
-        console.log(curName);
-        console.log(filterMasterList + " is in filtermasterlist");
-        console.log(filterMasterList);
-        tempMap.set(curName, val);
-      }
-
-      console.log(tempMap);
-      // console.log(filterMasterList);
-
-      printFilterMap(tempMap);
-
-     
-    } 
-
-  };*/
-
   // TODO: refactor filterdict
   const createMultipleSelect = (filters) => {
 
@@ -226,6 +197,9 @@ function App() {
       paramsInURL = true;
       var params = url.split("?");
       parseParams(params[1]); 
+    }
+    else {
+      setDataOnly(false);
     }
   };
 
@@ -478,45 +452,47 @@ function App() {
     <div className="background" >
       <h1>Center for Engineering Diversity Data Display Tool</h1>
 
-      <div className="Checkbox-Background">
-        <h1>Filter Options</h1>
-        <label for="selectAllFilters">Choose a filter to sort by: </label>
-        {/* <select name="selectAllFilters" id="selectAllFilters">
-          {Object.keys(attributes.attributes).map((i) => {
-                        return(<option value="i">{i}</option>);
-                  })}
-        </select> */}
-        {splitDropdown}
-        <Grid 
-          container 
-          className="dropdown-container"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Grid item >
-            {dropdownList.slice(0, filterListLen / 3)}
+      <div className={dataOnly ? 'hidden' : undefined}>
+        <div className="Checkbox-Background">
+          <h1>Filter Options</h1>
+          <label for="selectAllFilters">Choose a filter to sort by: </label>
+          {/* <select name="selectAllFilters" id="selectAllFilters">
+            {Object.keys(attributes.attributes).map((i) => {
+                          return(<option value="i">{i}</option>);
+                    })}
+          </select> */}
+          {splitDropdown}
+          <Grid 
+            container 
+            className="dropdown-container"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Grid item >
+              {dropdownList.slice(0, filterListLen / 3)}
+            </Grid>
+            <Grid item >
+              {dropdownList.slice(filterListLen / 3, 2 * filterListLen / 3)}
+            </Grid>
+            <Grid item >
+              {dropdownList.slice(2 * (filterListLen / 3), filterListLen)}
+            </Grid>
           </Grid>
-          <Grid item >
-            {dropdownList.slice(filterListLen / 3, 2 * filterListLen / 3)}
-          </Grid>
-          <Grid item >
-            {dropdownList.slice(2 * (filterListLen / 3), filterListLen)}
-          </Grid>
-        </Grid>
-       
-      </div>
-      <div className="Button-Background" >
-        <label for="fname">Graph name:  </label>
-        <input type="text" id="fname" class="fname"></input>
-        {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
-        <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
+        
+        </div>
+        <div className="Button-Background" >
+          <label for="fname">Graph name:  </label>
+          <input type="text" id="fname" class="fname"></input>
+          {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
+          <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
+        </div>
       </div>
     </div>
 
     
     <div>
       {tabList && tabList.map((tab, index) => (
-        <span>
+        <span className={dataOnly ? 'hidden' : undefined}>
           <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
             <span>{tab}</span> 
             <button style={{marginTop: 1, float: "right"}} className="btn" onClick={(e) => {e.stopPropagation(); onDeleteTab(index,e)}}><i className="fa fa-trash"></i></button>
@@ -539,17 +515,18 @@ function App() {
     </div>
       <div style={{paddingBottom:'50px'}}>
         <h1>Chart</h1>
-        <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
-          {/* <div dangerouslySetInnerHTML={{ __html: generateRateDropdown()}}/> */}
-          {rateOptions.map(item => {
-            if(item === rate) {
-              return <option value={item} selected>{item}</option>;
-            }
-            else {
-              return <option value={item}>{item}</option>;
-            }
-          })}
-        </select>
+        <div className={dataOnly ? 'hidden' : undefined}>
+          <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
+            {rateOptions.map(item => {
+              if(item === rate) {
+                return <option value={item} selected>{item}</option>;
+              }
+              else {
+                return <option value={item}>{item}</option>;
+              }
+            })}
+          </select>
+        </div>
         {currChart}
       </div>
 
