@@ -51,13 +51,13 @@ function App() {
   const parseParams = (params) => {
     console.log(params);
     var allParams = params.split("&filter=");
-    console.log(allParams +  " is all params");
+    console.log(allParams, " is all params");
     var rawParams = allParams[0].split(",");
     console.log(rawParams);
     // var extractedParams = {};
     // var count = 0;
     var splits = rawParams[0].replace("id=", "");
-    rawParams[0] = splits[0];
+    rawParams[0] = splits;
     console.log(rawParams);
     rawParams.forEach((item) => {
       if(item !== "") {
