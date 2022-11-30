@@ -406,6 +406,11 @@ function App() {
       var newFilterList = filterList.filter(item => item !== toRemoveFilter);
       setFilterList(newFilterList);     
 
+      //Update split col list
+      var toRemoveSplitCol = splitColList[index];
+      var newSplitColList = splitColList.filter(item => item !== toRemoveSplitCol);
+      setSplitColList(newSplitColList);   
+
       var toRemoveUrlIds = urlIds[index];
       var newUrlIds = urlIds.filter(item => item !== toRemoveUrlIds);
       setUrlIds(newUrlIds);
