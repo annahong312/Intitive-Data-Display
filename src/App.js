@@ -39,7 +39,7 @@ function App() {
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const [valArray, setValArray] = useState([]);
+  const [urlIds, setUrlIds] = useState([]);
     // Map ID's back to Names
   // build tab list
   const [tabList, setTabList] = useState([]);
@@ -128,49 +128,23 @@ function App() {
     setError(true);
   }
 
-  const copyLink = (currFilters) => {
+  const copyLink = () => {
     var url = "https://intuitive-data-display.netlify.app?";
-    if(valArray.length !== 0) {
+    var curValArray = urlIds[curIndex];
+    console.log(curValArray);
+    console.log("end val arr");
+    if(Object.keys(curValArray).length > 0) {
+      console.log(Object.keys(curValArray).length + " is length");
       url += "id=";
     }
-    for(var i=0; i<valArray.length; i++){
-      url += valArray[i];
+    for(const [key] of Object.entries(curValArray)) {
+      url += key;
       url += ",";
     }
     url += "&filter=" + encodeURIComponent(splitColList[curIndex]);
     console.log(url);
     return url;
   };
-
-  /*
-  const displayParamsFromURL = () => {
-    if(extractedParams.length > 0){
-      // set CurrFilters to extractedParams through printFilterMap
-      // setCurrFilters(extractedParams);
-      // call createGraph
-      
-      getAPIData(extractedParams);
-
-
-      var tempMap = new Map();
-
-      for (var val in extractedParams) {
-        var curName = filterIdsToNames[val];
-        console.log(curName);
-        console.log(filterMasterList + " is in filtermasterlist");
-        console.log(filterMasterList);
-        tempMap.set(curName, val);
-      }
-
-      console.log(tempMap);
-      // console.log(filterMasterList);
-
-      printFilterMap(tempMap);
-
-     
-    } 
-
-  };*/
 
   // TODO: refactor filterdict
   const createMultipleSelect = (filters) => {
@@ -254,23 +228,24 @@ function App() {
     var filterMap = new Map(JSON.parse(
       JSON.stringify(Array.from(invertedVals))));
 
-    // console.log(filterMap, " is filterMap");
+    console.log(filterMap, " is filterMap");
 
     setFilterList(filterList.concat(selectedFilterMap));
     setCurrFilters(selectedFilterMap);
     // console.log(storeRateOptions, " is storeRateOptions");
     setRateOptions(storeRateOptions);
-    var valueArray = [];
-      for (let [key, value] of filterMap) {
+    var valueIds = {}
+    var valueArray = []
+      for (let [key, value] of selectedFilterMap) {
+        // console.log(key + " is key " + value + " is value");
         for (var val in value) {
-          console.log(value[val], " is value[val]", " and key is ", key, " and value is ", value);
           valueArray.push(filterMasterList.get(key)[value[val]]);
+          valueIds[filterMasterList.get(key)[value[val]]] = value[val];
 
         }
 
       }
-      setValArray(valueArray);
-
+      setUrlIds(urlIds.concat(valueIds));
 
       var e = document.getElementById("selectAllFilters");
       var splitColValue;
@@ -280,7 +255,6 @@ function App() {
         splitColValue = e.value;
         
       }
-      console.log(valueArray, "is valueArray");
       
       GetData(JSON.stringify({
         filters: valueArray,
@@ -301,7 +275,7 @@ function App() {
         filterName = filterIdsToNames[key];
       }
       var dataRates = value.rates[rate];
-      console.log(dataRates, " is dataRates");
+      // console.log(dataRates, " is dataRates");
       console.log(data)
 
       var dataRow = {
@@ -309,14 +283,14 @@ function App() {
         total: value.count
       }
       for(let i = 0; i < dataRates.length; i++) {
-        console.log(dataRates[i], " is dataRates[i] " + rate + " is rate");
+        // console.log(dataRates[i], " is dataRates[i] " + rate + " is rate");
         if(attributes.length > 0) {
-          console.log("not null for attributes");
+          // console.log("not null for attributes");
           dataRow[attributes.rates[rate][i]] = dataRates[i];
         }
         else {
-          console.log(attributeRates);
-          console.log(attributeRates.rates[rate][i]);
+          // console.log(attributeRates);
+          // console.log(attributeRates.rates[rate][i]);
           dataRow[attributeRates.rates[rate][i]] = dataRates[i];
         }
       }
@@ -408,7 +382,7 @@ function App() {
       setCurrChart([]);
       // set current filters as empty list
       setCurrFilters([]);
-      // set current index as -1
+      setUrlIds([]);
 
       curIndex = -1;
       // set max index as -1
@@ -431,6 +405,15 @@ function App() {
       var toRemoveFilter = filterList[index];
       var newFilterList = filterList.filter(item => item !== toRemoveFilter);
       setFilterList(newFilterList);     
+
+      //Update split col list
+      var toRemoveSplitCol = splitColList[index];
+      var newSplitColList = splitColList.filter(item => item !== toRemoveSplitCol);
+      setSplitColList(newSplitColList);   
+
+      var toRemoveUrlIds = urlIds[index];
+      var newUrlIds = urlIds.filter(item => item !== toRemoveUrlIds);
+      setUrlIds(newUrlIds);
       
       if (index === curIndex && index === 0) {
         // curIndex++;
@@ -478,45 +461,47 @@ function App() {
     <div className="background" >
       <h1>Center for Engineering Diversity Data Display Tool</h1>
 
-      <div className="Checkbox-Background">
-        <h1>Filter Options</h1>
-        <label for="selectAllFilters">Choose a filter to sort by: </label>
-        {/* <select name="selectAllFilters" id="selectAllFilters">
-          {Object.keys(attributes.attributes).map((i) => {
-                        return(<option value="i">{i}</option>);
-                  })}
-        </select> */}
-        {splitDropdown}
-        <Grid 
-          container 
-          className="dropdown-container"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Grid item >
-            {dropdownList.slice(0, filterListLen / 3)}
+      <div className={paramsInURL ? 'hidden' : undefined}>
+        <div className="Checkbox-Background">
+          <h1>Filter Options</h1>
+          <label for="selectAllFilters">Choose a filter to sort by: </label>
+          {/* <select name="selectAllFilters" id="selectAllFilters">
+            {Object.keys(attributes.attributes).map((i) => {
+                          return(<option value="i">{i}</option>);
+                    })}
+          </select> */}
+          {splitDropdown}
+          <Grid 
+            container 
+            className="dropdown-container"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Grid item >
+              {dropdownList.slice(0, filterListLen / 3)}
+            </Grid>
+            <Grid item >
+              {dropdownList.slice(filterListLen / 3, 2 * filterListLen / 3)}
+            </Grid>
+            <Grid item >
+              {dropdownList.slice(2 * (filterListLen / 3), filterListLen)}
+            </Grid>
           </Grid>
-          <Grid item >
-            {dropdownList.slice(filterListLen / 3, 2 * filterListLen / 3)}
-          </Grid>
-          <Grid item >
-            {dropdownList.slice(2 * (filterListLen / 3), filterListLen)}
-          </Grid>
-        </Grid>
-       
-      </div>
-      <div className="Button-Background" >
-        <label for="fname">Graph name:  </label>
-        <input type="text" id="fname" class="fname"></input>
-        {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
-        <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
+        
+        </div>
+        <div className="Button-Background" >
+          <label for="fname">Graph name:  </label>
+          <input type="text" id="fname" class="fname"></input>
+          {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
+          <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
+        </div>
       </div>
     </div>
 
     
     <div>
       {tabList && tabList.map((tab, index) => (
-        <span>
+        <span className={paramsInURL ? 'hidden' : undefined}>
           <button style={{marginRight: 2, backgroundColor: (tabIsActive===index) ? '#FFDD60' : ''}} className="tablinks" onClick={() => onTabClick(index)}>
             <span>{tab}</span> 
             <button style={{marginTop: 1, float: "right"}} className="btn" onClick={(e) => {e.stopPropagation(); onDeleteTab(index,e)}}><i className="fa fa-trash"></i></button>
@@ -532,24 +517,25 @@ function App() {
       </div>
 
     <div>
-      <button onClick={() => navigator.clipboard.writeText(copyLink(currFilters))}>
+      <button onClick={() => navigator.clipboard.writeText(copyLink())}>
         Copy Link to Clipboard
       </button>
       
     </div>
       <div style={{paddingBottom:'50px'}}>
         <h1>Chart</h1>
-        <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
-          {/* <div dangerouslySetInnerHTML={{ __html: generateRateDropdown()}}/> */}
-          {rateOptions.map(item => {
-            if(item === rate) {
-              return <option value={item} selected>{item}</option>;
-            }
-            else {
-              return <option value={item}>{item}</option>;
-            }
-          })}
-        </select>
+        <div className={paramsInURL ? 'hidden' : undefined}>
+          <select name="rateDropdown" id="rateDropdown"  onChange={onRateChange}>
+            {rateOptions.map(item => {
+              if(item === rate) {
+                return <option value={item} selected>{item}</option>;
+              }
+              else {
+                return <option value={item}>{item}</option>;
+              }
+            })}
+          </select>
+        </div>
         {currChart}
       </div>
 
