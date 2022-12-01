@@ -225,18 +225,13 @@ function App() {
       invertedVals = curVals;
     }
 
-    var filterMap = new Map(JSON.parse(
-      JSON.stringify(Array.from(invertedVals))));
-
-    console.log(filterMap, " is filterMap");
-
     setFilterList(filterList.concat(selectedFilterMap));
     setCurrFilters(selectedFilterMap);
     // console.log(storeRateOptions, " is storeRateOptions");
     setRateOptions(storeRateOptions);
     var valueIds = {}
     var valueArray = []
-      for (let [key, value] of selectedFilterMap) {
+      for (let [key, value] of invertedVals) {
         // console.log(key + " is key " + value + " is value");
         for (var val in value) {
           valueArray.push(filterMasterList.get(key)[value[val]]);
