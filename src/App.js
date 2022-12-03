@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Grid, Button } from '@mui/material';
 import React, { useRef, useState } from "react";
 import './App.css';
 import ErrorMessage from './Components/ErrorMessage';
@@ -393,7 +393,22 @@ function App() {
         <div className="Button-Background" >
           <label for="fname">Graph name:  </label>
           <input type="text" id="fname" class="fname"></input>
-          <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
+          <Button 
+            onClick={getAPIData} 
+            // variant="outlined" 
+            className="mainButton" 
+            type="button"
+            style={{
+              border: "1px black solid",
+              color: "#000000",
+              backgroundColor: "#faeebe",
+              margin: "5px",
+              width: "160px",
+              height: "32px",
+              padding: "5px",
+          }}>
+              Generate Data
+          </Button>
         </div>
       </div>
     </div>
