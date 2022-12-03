@@ -37,8 +37,6 @@ function nameValUpdate(curNameVals, label) {
   } else {
     usedNameVals = usedNameVals.set(label, curNameVals);
   }
-  console.log(usedNameVals);
-  // console.log(usedNameVals + " is usedNameVals for " + label);
 }
 
 export const getUpdatedNameVals = () => {
@@ -46,11 +44,8 @@ export const getUpdatedNameVals = () => {
 };
 
 export default function MultipleSelect(givenNames) {
-  // console.log(givenNames);
   var names = givenNames.givenNames;
   var label = givenNames.label;
-  //   console.log(names + " names");
-  // console.log(label + " label");
   const theme = useTheme();
   const [nameVals, setNameVals] = React.useState([]);
 
@@ -59,7 +54,6 @@ export default function MultipleSelect(givenNames) {
       target: { value },
     } = event;
     setNameVals(
-      // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
 
@@ -71,9 +65,6 @@ export default function MultipleSelect(givenNames) {
   };
 
   const handleDelete = (value) => {
-    //remove the entry from the array using setPersonName
-    // setPersonName([...personName, value]);
-    // console.log(value);
     setNameVals(nameVals.filter((item) => item !== value));
     var newNameVals = nameVals.filter((item) => item !== value);
     nameValUpdate(newNameVals, label);
@@ -103,7 +94,7 @@ export default function MultipleSelect(givenNames) {
               multiple
               value={nameVals}
               onChange={handleChange}
-              input={<OutlinedInput id="select-multiple-chip" label={label} />} //select-multiple-chip
+              input={<OutlinedInput id="select-multiple-chip" label={label} />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.25 }}>
                   {selected.map((value) => (
@@ -112,7 +103,6 @@ export default function MultipleSelect(givenNames) {
                       label={value}
                       onMouseDown={onMouseDown}
                       onDelete={() => handleDelete(value)}
-                      // onClick={handleDelete}
                       onClick={handleChange}
                       variant="outlined"
                     />

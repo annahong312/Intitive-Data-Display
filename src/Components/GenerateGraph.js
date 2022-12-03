@@ -1,6 +1,5 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
-// import { Chart } from 'chart.js/auto'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,13 +42,7 @@ function GetData(props) {
     var filterName;
     if (key === "total") {
       filterName = "Total";
-
-      // Remove the first element of Total array to match chart
-      if (value.rates[props.rate].length !== 0) {
-        // value.rates[props.rate].shift();
-      }
     } else {
-      // filterName = Object.keys(props.filterDict).find(filterKey => props.filterDict[filterKey] === parseInt(key));
       filterName = props.filterDict[key];
     }
  
@@ -69,9 +62,7 @@ function GetData(props) {
 export default function GenerateGraph(props) {
   return (
     <div>
-      {/* <button onClick={() => setData(data)}>Reset</button> */}
       <Line
-        // data={data}
         data={{
           labels: props.attributes,
           datasets: GetData(props),

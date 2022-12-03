@@ -1,12 +1,12 @@
-import React, { useState, useRef } from "react";
+import { Grid } from '@mui/material';
+import React, { useRef, useState } from "react";
 import './App.css';
+import ErrorMessage from './Components/ErrorMessage';
 import GenerateChartMUI from './Components/GenerateChartMUI.js';
 import GenerateGraph from './Components/GenerateGraph.js';
-import MultipleSelect, {getUpdatedNameVals} from './Components/MultipleSelect.js'
-import { GetAttributes, GetData } from './Scripts'
 import Login from './Components/Login';
-import ErrorMessage from './Components/ErrorMessage'
-import { Grid } from '@mui/material';
+import MultipleSelect, { getUpdatedNameVals } from './Components/MultipleSelect.js';
+import { GetAttributes, GetData } from './Scripts';
 
 var curIndex = -1;
 var maxIndex = -1;
@@ -26,72 +26,46 @@ function App() {
   const [splitColList, setSplitColList] = useState([]);
   const [splitDropdown, setSplitDropdown] = useState([]);
   const [rateOptions, setRateOptions] = useState([]);
+  const [urlIds, setUrlIds] = useState([]);
 
   const [chartList, setChartList] = useState([]);
-
   const [graphList, setGraphList] = useState([]);
   const [currChart, setCurrChart] = useState([]);
   const [dropdownList, setDropdownList] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [currFilters, setCurrFilters] = useState([]);
   const [tabIsActive, setTabIsActive] = useState(-1);
+  const [tabList, setTabList] = useState([]);
 
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const [urlIds, setUrlIds] = useState([]);
-    // Map ID's back to Names
-  // build tab list
-  const [tabList, setTabList] = useState([]);
-
   const scrollTo = useRef(null);
   const executeScroll = () => scrollTo.current.scrollIntoView();
 
-
   const parseParams = (params) => {
-    console.log(params);
     var allParams = params.split("&filter=");
-    console.log(allParams, " is all params");
     var rawParams = allParams[0].split(",");
-    console.log(rawParams);
-    // var extractedParams = {};
-    // var count = 0;
+    
     var splits = rawParams[0].replace("id=", "");
     rawParams[0] = splits;
-    console.log(rawParams);
     rawParams.forEach((item) => {
       if(item !== "") {
         extractedParams.push(parseInt(item));
       }
     });
-    console.log(extractedParams);
-    console.log(allParams[1] + " is allParams1 ");
     splitColFromURL = decodeURIComponent(allParams[1]);
-    console.log(splitColFromURL + " is splitColFromURL");
-    //start
-    console.log(extractedParams);
-    console.log(JSON.stringify(filterIdsToNames));
-    console.log(filterMasterListIds);
 
     // take extractedParams and get names of filters based on ids
     var nameVals = new Map();
     for (var idx = 0; idx < extractedParams.length; idx++) {
-      console.log(extractedParams[idx]);
       var name = filterIdsToNames[extractedParams[idx]];
-      // var testName = filterIdsToNames[]
-      console.log(name + " is cur name");
+      
       // get the name of the filter from the id
       var filter = null;
-      // for(var [key, value] of filterMasterListIds) {
-      //  console.log(key + " is key testing");
-      // }
       for (let [key, value] of filterMasterListIds.entries()) {
-        console.log(key + " is key " + value + " is value for masterListIds");
         for (var i = 0; i < value.length; i++) {
-          console.log(value[i] + " is value at i");
           if (value[i] === extractedParams[idx]) {
             filter = key;
-            console.log(filter + " " + name + " is found for id " + extractedParams[idx]);
             break;
           }
         }
@@ -108,14 +82,9 @@ function App() {
       } else {
         nameVals.set(filter, [name]);
       }
-
-      console.log(name + " " + filter);
       
     }
-    console.log(nameVals);
-
     getAPIData(nameVals);
-    //end
 
   };
 
@@ -128,13 +97,11 @@ function App() {
     setError(true);
   }
 
+  //build url for sharing
   const copyLink = () => {
     var url = "https://intuitive-data-display.netlify.app?";
     var curValArray = urlIds[curIndex];
-    console.log(curValArray);
-    console.log("end val arr");
     if(Object.keys(curValArray).length > 0) {
-      console.log(Object.keys(curValArray).length + " is length");
       url += "id=";
     }
     for(const [key] of Object.entries(curValArray)) {
@@ -142,31 +109,20 @@ function App() {
       url += ",";
     }
     url += "&filter=" + encodeURIComponent(splitColList[curIndex]);
-    console.log(url);
     return url;
   };
 
-  // TODO: refactor filterdict
   const createMultipleSelect = (filters) => {
 
     // set attributes
-    console.log(filters);
     setAttributes(filters.data);
     attributeRates = filters.data;
-    console.log(filters.data);
-    console.log("end filter attributes");
     storeRateOptions = Object.keys(filters.data.rates);
     rate = storeRateOptions[0];
 
     var dropdownLabels = filters.data.attributes;
     
-    
-
-    // console.log("dropdownLabels: " + dropdownLabels);
-    // console.log(attributes + " is attributes in createMultipleSelect");
-    
     // Mapping filters to names 
-    // Filter = string name, need to map to a separate map
     var newFilterDropdowns = Object.keys(dropdownLabels).map((filter) => {
 
       var curFilterDict = {}
@@ -177,14 +133,10 @@ function App() {
       for (var i = 0; i < keys.length; i++) {
         curFilterDict[keys[i]] = values[i];
         curFilterDictIds.push(values[i]);
-        // filterDict[keys[i]] = values[i]; //TODO remove
         filterIdsToNames[values[i]] = keys[i];
-        // console.log(keys[i], values[i], " are keys and values of filterIds");
       }
       filterMasterList.set(filter, curFilterDict);
       filterMasterListIds.set(filter, curFilterDictIds);
-
-      // displayParamsFromURL();
 
       return <MultipleSelect givenNames={Object.keys(dropdownLabels[filter])} label={filter} />
     });
@@ -203,22 +155,16 @@ function App() {
     }
   };
 
-
-  // Called on Generate Chart
   // function to return data from API call
   const getAPIData = (curVals) => {
     var invertedVals;
     var selectedFilterMap;
 
-    console.log(selectedFilterMap);
-    if(!paramsInURL){ 
-      console.log("curVals is null");
+    if(!paramsInURL){ // if no params in URL
       var vals = getUpdatedNameVals();
       selectedFilterMap = new Map(JSON.parse(
         JSON.stringify(Array.from(vals))));
-        console.log(selectedFilterMap);
       invertedVals = invertDropdownData(selectedFilterMap);
-      console.log(invertedVals);
     }
     else {
       selectedFilterMap = invertDropdownData(curVals);
@@ -227,12 +173,10 @@ function App() {
 
     setFilterList(filterList.concat(selectedFilterMap));
     setCurrFilters(selectedFilterMap);
-    // console.log(storeRateOptions, " is storeRateOptions");
     setRateOptions(storeRateOptions);
     var valueIds = {}
     var valueArray = []
       for (let [key, value] of invertedVals) {
-        // console.log(key + " is key " + value + " is value");
         for (var val in value) {
           valueArray.push(filterMasterList.get(key)[value[val]]);
           valueIds[filterMasterList.get(key)[value[val]]] = value[val];
@@ -258,7 +202,6 @@ function App() {
   }
   
   const onAddBtnClickGraph = (data) => {
-    // process data into a list
     var dataRows = []
     for(const [key,value] of Object.entries(data.data)) {
       // change key into respective filter value
@@ -266,41 +209,28 @@ function App() {
       if(key === "total") {
         filterName = "Total";
       } else {
-        // filterName = Object.keys(filterDict).find(filterKey => filterDict[filterKey] === parseInt(key));
         filterName = filterIdsToNames[key];
       }
       var dataRates = value.rates[rate];
-      // console.log(dataRates, " is dataRates");
-      console.log(data)
 
       var dataRow = {
         name: filterName,
         total: value.count
       }
       for(let i = 0; i < dataRates.length; i++) {
-        // console.log(dataRates[i], " is dataRates[i] " + rate + " is rate");
         if(attributes.length > 0) {
-          // console.log("not null for attributes");
           dataRow[attributes.rates[rate][i]] = dataRates[i];
         }
         else {
-          // console.log(attributeRates);
-          // console.log(attributeRates.rates[rate][i]);
           dataRow[attributeRates.rates[rate][i]] = dataRates[i];
         }
       }
       dataRows.push(dataRow);
 
     }
-
-    // console.log(data.data + " is data in onAddBtnClickGraph");
-
     curIndex++;
     maxIndex++;
-
-    // setFilterList(filterList.concat(filterMap));
-    // console.log(filterList[maxIndex] + " filterList");
-
+    // get splitColValue
     var e = document.getElementById("selectAllFilters");
     var splitColValue = e.value;
     setSplitColList(splitColList.concat(splitColValue));
@@ -312,9 +242,8 @@ function App() {
 
     // get name of tab from fname input field
     var tabName = document.getElementsByClassName("fname")[0].value;
-    // console.log(tabName + " tabName");
 
-     // TODO: display error message on duplicate name asdf
+     // duplicate tab
      if (! tabList.includes(tabName)){
       if (tabName === "") {
         tabName = "Tab " + (maxIndex + 1);
@@ -334,16 +263,13 @@ function App() {
     for (let [key, value] of filterMap) { //this should mimic mulitpleSelect return map of lists 
       var selectedItems = []; //
       for(var val in filterMasterList.get(key)) {
-            // if val is in filterMasterList but not in filterMap/,newUsedNameVals 
-            //add it to newFilterMap
+            // if val is in filterMasterList but not in filterMap, add to selectedItems 
         if (! (value.includes(val))){
           selectedItems.push(val);
         }
           
       }
       newUsedNameVals.set(key, selectedItems);
-      // console.log(newUsedNameVals);
-      // console.log("end newUsedNameVals");
     }
     return newUsedNameVals;
   };
@@ -353,7 +279,6 @@ function App() {
 
     curIndex = index;
     setCurrChart(chartList[curIndex]);
-    // console.log("curIndex filter: " + curIndex, filterList[curIndex], filterList.length);
     setCurrFilters(filterList[curIndex]);
     setTabIsActive(curIndex);
   };
@@ -363,19 +288,12 @@ function App() {
     // get the index of the tab
     if (index === 0 && chartList.length === 1) {
 
-      // set chart as empty list
+      // set each created graph and its attributes as empty
       setChartList([]);
-      // set graph as empty list
       setGraphList([]);
-      // set tab as empty list
       setTabList([]);
-      //set filters list
       setFilterList([]);
-      // set current chart as empty list
-      // setRateOptions([]);
-      
       setCurrChart([]);
-      // set current filters as empty list
       setCurrFilters([]);
       setUrlIds([]);
 
@@ -387,15 +305,13 @@ function App() {
       // remove the tab from the tab list
       var toRemove = tabList[index];
       setTabList(tabList.filter(item => item !== toRemove));
-      // tabList.splice(index, 1);
       // remove the chart from the chart list
       var toRemoveChart = chartList[index];
       var newChartList = chartList.filter(item => item !== toRemoveChart);
       setChartList(newChartList);
       // remove the graph from the graph list
       var toRemoveGraph = graphList[index];
-      setGraphList(graphList.filter(item => item !== toRemoveGraph));
-      
+      setGraphList(graphList.filter(item => item !== toRemoveGraph));  
       // set filter list
       var toRemoveFilter = filterList[index];
       var newFilterList = filterList.filter(item => item !== toRemoveFilter);
@@ -411,7 +327,6 @@ function App() {
       setUrlIds(newUrlIds);
       
       if (index === curIndex && index === 0) {
-        // curIndex++;
         curIndex = 0;
       } else {
         curIndex--;
@@ -421,17 +336,15 @@ function App() {
     }
   };
 
+  //get data when a new rate is selected
   const onRateChange = () => {
-    // rate = e.target.value;
     rate = document.getElementById("rateDropdown").value;
-    // console.log("rate", rate);
     getAPIData();
 
   }
 
   // function for formatting print the filter map out nicely
   const printFilterMap = (filterMap) => {
-    // console.log("printing filter map", filterMap, curIndex);
     var htmlstr = "";
     if (filterMap === undefined) {
       return htmlstr;
@@ -445,9 +358,7 @@ function App() {
 
   const filterListLen = Object.keys(dropdownList).length;
 
-
   return (<div className="App">
-    {/* <header className="App-header"> </header> */}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
       
     <Login onLogin={onLogin}/>
@@ -460,11 +371,6 @@ function App() {
         <div className="Checkbox-Background">
           <h1>Filter Options</h1>
           <label for="selectAllFilters">Choose a filter to sort by: </label>
-          {/* <select name="selectAllFilters" id="selectAllFilters">
-            {Object.keys(attributes.attributes).map((i) => {
-                          return(<option value="i">{i}</option>);
-                    })}
-          </select> */}
           {splitDropdown}
           <Grid 
             container 
@@ -487,12 +393,10 @@ function App() {
         <div className="Button-Background" >
           <label for="fname">Graph name:  </label>
           <input type="text" id="fname" class="fname"></input>
-          {/* <button onClick={onAddBtnClickGraph} className="mainButton" type="button">Generate Data</button> */}
           <button onClick={getAPIData} className="mainButton" type="button">Generate Data</button>
         </div>
       </div>
     </div>
-
     
     <div>
       {tabList && tabList.map((tab, index) => (
@@ -533,8 +437,7 @@ function App() {
         </div>
         {currChart}
       </div>
-
-      
+   
       <div className="background">
         <h1>Graph</h1>
         {graphList[curIndex]}

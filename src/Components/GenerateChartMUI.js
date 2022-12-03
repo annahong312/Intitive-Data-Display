@@ -36,8 +36,6 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -77,12 +75,6 @@ function createHeadCells(labels) {
   });
   
   return headCells;
-  // return labels.map((label) => ({
-  //   id: label,
-  //   numeric: false,
-  //   disablePadding: true,
-  //   label: label,
-  // }));
 }
 
 function EnhancedTableHead(props) {
@@ -92,7 +84,6 @@ function EnhancedTableHead(props) {
     onRequestSort,
     attributes,
   } = props;
-  // console.log(attributes);
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -190,16 +181,11 @@ export default function EnhancedTable(props) {
   const [usePercentage, setUsePercentage] = React.useState(false);
 
   // define the data values for rows
-  // console.log(props.data);
-
   const rows = props.data;
   const attributes = props.attributes;
   curRate = props.rate;
 
-  // const { saveAsCsv } = useJsonToCsv();
-  // ref https://github.com/praveenkumar-kalidass/react-json-csv/blob/master/src/constants/index.js
-  // const filename = 'chart_data';
-
+  //export file
   const downloadFile = ({ data, fileName, fileType }) => {
     const blob = new Blob([data], { type: fileType });
 
@@ -215,6 +201,7 @@ export default function EnhancedTable(props) {
     a.remove();
   };
 
+  //create csv file
   const exportToCsv = (e) => {
     e.preventDefault();
 
@@ -223,16 +210,7 @@ export default function EnhancedTable(props) {
     for (let i = 0; i < attributes.length; i++) {
       headers.push(attributes[i]);
     }
-    // call convertToCSV function which will create the CSV from the JSON Data
-    // console.log(rows, " are rows and ", headers, " are headers");
     const csv = ConvertToCSV(rows, headers);
-
-    // Convert users data to a csv
-    // let usersCsv = usersData.users.reduce((acc, user) => {
-    //   const { id, name, surname, age } = user
-    //   acc.push([id, name, surname, age].join(','))
-    //   return acc
-    // }, [])
 
     downloadFile({
       data: [csv].join("\n"), //...headers, ..
@@ -388,9 +366,6 @@ export default function EnhancedTable(props) {
         control={<Switch checked={usePercentage} onChange={handleChangePercentage} />}
         label="Percentages"
       />
-      {/* <button onClick={saveAsCsv({rows, attributes, filename})}> 
-      useJsonToCsv
-    </button> */}
       <button type="button" onClick={exportToCsv}>
         Export to CSV
       </button>
