@@ -375,7 +375,6 @@ function App() {
           <Grid 
             container 
             className="dropdown-container"
-            alignItems="center"
             justifyContent="center"
           >
             <Grid item >
@@ -396,7 +395,6 @@ function App() {
           <Button 
             onClick={getAPIData} 
             // variant="outlined" 
-            className="mainButton" 
             type="button"
             style={{
               border: "1px black solid",
